@@ -332,25 +332,23 @@ int CCG_Main(int argc, char *argv[]){
 
   #ifdef USE_SDL2
     if ( gbSDL_Mode ){
-      vSDL_WelcomeInit();
       if ( iSDL_OpenWelcome(pSDL_Rnd) == FINISH_PROGRAM ) {
-        vSDL_MainQuit();
+        vSDL_MainQuit(&pSDL_Wndw);
         return 0;
       }
     }
   #endif
 
-  if ( !gbLoadGameFromFile ) {
-    vInitBasicDeck(&stDeck);
-    iDrawMultipleCard(INIT_HAND_CARDS, &stDeck);
-    vInitPlayer(&stDeck, !gbSDL_Mode);
-    vInitMonstersForLevel(astMonsters, giLevel, &iMonsterCount);
-    vInitDialog();
-  }
-  else {
+  vInitBasicDeck(&stDeck);
+  iDrawMultipleCard(INIT_HAND_CARDS, &stDeck);
+  vInitPlayer(&stDeck, !gbSDL_Mode);
+  vInitMonstersForLevel(astMonsters, giLevel, &iMonsterCount);
+  vInitDialog();
+  
+  if ( gbLoadGameFromFile )
     vGameLoadCtxVars(&gstGame.stGameContext, &stDeck, &gstPlayer, astMonsters, &iMonsterCount);
-  }
- 
+  
+    
   #ifdef FAKE
     vFakeOpenShopEarly(&stDeck);
   #endif
@@ -358,8 +356,10 @@ int CCG_Main(int argc, char *argv[]){
   if ( DEBUG_LVL_DETAILS ) vTraceMainLoopInit(); 
 
   #ifdef USE_SDL2
-    if ( gbSDL_Mode )
+    if ( gbSDL_Mode ){
+      vSDL_DrawBegin(pSDL_Rnd, &stDeck, astMonsters, iMonsterCount);
       vSDL_MainLoop(&bRunning, &SDL_Ev, pSDL_Rnd, &stDeck, astMonsters, iMonsterCount);
+    }
     else 
       vCNSL_MainLoop(&bRunning, &stDeck, astMonsters, iMonsterCount);
   #else
@@ -373,7 +373,7 @@ int CCG_Main(int argc, char *argv[]){
   
   #ifdef USE_SDL2
     if ( gbSDL_Mode ) 
-      vSDL_MainQuit();
+      vSDL_MainQuit(&pSDL_Wndw);
   #endif
 
   return 0;

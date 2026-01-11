@@ -15,10 +15,12 @@
     
     extern int giSelectedMonster;
     /** Bitwise redraw options */
-    #define REDRAW_NONE    0x00
-    #define REDRAW_DIALOG  0x01
-    #define REDRAW_TABLE   0x02
-    #define REDRAW_ALL     0x03
+    #define REDRAW_NONE        0x00
+    #define REDRAW_DIALOG      0x01
+    #define REDRAW_TABLE       0x02
+    #define REDRAW_ALL         0x03
+    /** Recapture events */
+    #define REDRAW_REDO_EVENTS -2
 
     /** COLOR MACRO SESSION  */
     #define OPACITY_OPAQUE           255  /* fully solid          */
@@ -78,8 +80,9 @@
     void vSDL_MainInit();
     void vSDL_DrawMenu(SDL_Renderer* pSDL_Renderer, void* pstMenu);
     void vSDL_DrawPause(SDL_Renderer* pSDL_Renderer);
+    void vSDL_DrawBegin(SDL_Renderer *pSDL_Renderer, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonsterCt);
     void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Renderer, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonsterCt);
-    void vSDL_MainQuit(void);
+    void vSDL_MainQuit(SDL_Window **pSDL_Window);
     void vSDL_ToggleFullscreen(void); 
     void vSDL_DrawText(SDL_Renderer *pSDL_Renderer, const char *szTxt, int iX, int iY, SDL_Color stCol);
     void vSDL_DrawTable(SDL_Renderer *pSDL_Renderer, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonsterCt);
@@ -101,8 +104,8 @@
     void vSDL_MessageBox(const char *kpszMsg, const char *kpszFooterMsg);
     extern STRUCT_SDL_DIALOG_LAYOUT gstDialogLayout;
     typedef struct { Uint32 type; const char *name; } SDLEventName;
-    extern int gbSelectingTarget;
     extern const SDLEventName gEventNames[];
+    
   #endif
   
   #if !defined(LINUX) && !defined(APPLE)

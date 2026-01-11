@@ -1,6 +1,7 @@
 #ifndef BATTLE_H
     #define BATTLE_H
     // #include <card_game.h>
+    #define NO_ENOUGH_ENERGY -2
     
     void vPlayCard(int *iCardIndex, PSTRUCT_DECK pstDeck);
     void vShowTable(PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonsterCount);

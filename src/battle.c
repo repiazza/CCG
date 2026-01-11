@@ -257,7 +257,7 @@ void vPlayCard(int *iCardIndex, PSTRUCT_DECK pstDeck){
     char szMsg[128];
     sprintf(szMsg, "Energia insuficiente [%d/%d]", pstCard->iCost, gstPlayer.iEnergy);
     vPrintHighlitedLine(szMsg, INSERT_NEW_LINE);
-    *iCardIndex = -2;
+    *iCardIndex = NO_ENOUGH_ENERGY;
     return;
   }
 
