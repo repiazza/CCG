@@ -1,3 +1,7 @@
+## <small>9.4.1 (2026-01-11)</small>
+
+* fix: added some new state handling ([f95eff5](https://github.com/repiazza/CCG/commit/f95eff5))
+
 ## 9.4.0 (2026-01-07)
 
 * feat: removido variaveis globais dos mosntros no save do jogo para variaveis por parametro ([b711c55](https://github.com/repiazza/CCG/commit/b711c55))
