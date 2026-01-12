@@ -1,3 +1,8 @@
+## <small>9.4.2 (2026-01-12)</small>
+
+* Merge branch 'main' of https://github.com/repiazza/CCG ([d453610](https://github.com/repiazza/CCG/commit/d453610))
+* fix: mainloop cleanup ([1a221c3](https://github.com/repiazza/CCG/commit/1a221c3))
+
 ## <small>9.4.1 (2026-01-11)</small>
 
 * fix: added some new state handling ([f95eff5](https://github.com/repiazza/CCG/commit/f95eff5))
