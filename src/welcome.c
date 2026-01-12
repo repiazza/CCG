@@ -122,6 +122,7 @@ int gbWelcomeOpen = FALSE;
     }
 
     if ( pSDL_Renderer == NULL ) return -1;
+    
     vSDL_WelcomeInit();
     gbWelcomeOpen = TRUE;
     bRunning = TRUE;

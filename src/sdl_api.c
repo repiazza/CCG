@@ -470,8 +470,7 @@ int bAreCoordsInSDL_Rect(SDL_Rect *pSDL_RECT, int iX, int iY) {
   return bRsl;
 }
 
-void vSDL_DialogDraw(SDL_Renderer *pSDL_Renderer,
-                    PSTRUCT_SDL_DIALOG_LAYOUT pstLayout) {
+void vSDL_DialogDraw(SDL_Renderer *pSDL_Renderer, PSTRUCT_SDL_DIALOG_LAYOUT pstLayout) {
   SDL_Rect stRectDialog;
   SDL_Rect stRectShadow;
   SDL_Color stColPanel;
@@ -1204,8 +1203,6 @@ void vSDL_MessageBox(const char *kpszMsg, const char *kpszFooterMsg) {
   stTextRect.x = stRect.x + (stRect.w - stTextRect.w) / 2;
   stTextRect.y = stRect.y + (stRect.h - stTextRect.h) / 4;
 
-
-
   pstFooterTextSurface = TTF_RenderText_Blended(gFont, kpszFooterMsg, stTextColor);
   pstFooterTextTexture = SDL_CreateTextureFromSurface(gpSDL_Renderer, pstFooterTextSurface);
 
@@ -1267,7 +1264,6 @@ void vSDL_DrawMenu(SDL_Renderer* pSDL_Renderer, void* pstMenu) {
   SDL_RenderFillRect(pSDL_Renderer, (SDL_Rect*)&pstScreenMenu->stRect);
   SDL_SetRenderDrawColor(pSDL_Renderer, pstScreenMenu->stBorderColor.r, pstScreenMenu->stBorderColor.g, pstScreenMenu->stBorderColor.b, pstScreenMenu->stBorderColor.a);
   SDL_RenderDrawRect(pSDL_Renderer, (SDL_Rect*)&pstScreenMenu->stRect);
-
   vSDL_DrawText(pSDL_Renderer, pstScreenMenu->szText, pstScreenMenu->stRect.x + 20, pstScreenMenu->stRect.y + 20, *(SDL_Color*)&pstScreenMenu->stFgColor);
 
   iX = pstScreenMenu->stRect.x + 40;
@@ -1387,6 +1383,7 @@ int iSDL_OpenPause(SDL_Renderer *pSDL_Renderer, PSTRUCT_MONSTER pastMonster, int
   }
 
   if ( pSDL_Renderer == NULL ) return -1;
+  
   gbPauseOpen = TRUE;
   bRunning = TRUE;
   while ( bRunning ) {
@@ -1450,11 +1447,11 @@ int iSDL_OpenPause(SDL_Renderer *pSDL_Renderer, PSTRUCT_MONSTER pastMonster, int
 }
 
 static int iSDL_HandlePause(int *pbRunning,
-                                       SDL_Renderer *pSDL_Renderer,
-                                       int *piRedrawAction,
-                                       PSTRUCT_DECK pstDeck,
-                                       PSTRUCT_MONSTER pastMonsters,
-                                       int iMonsterCt) {
+                            SDL_Renderer *pSDL_Renderer,
+                            int *piRedrawAction,
+                            PSTRUCT_DECK pstDeck,
+                            PSTRUCT_MONSTER pastMonsters,
+                            int iMonsterCt) {
   if (gstGame.iStatus != STATUS_PAUSE) {
     return 0;
   }
@@ -1474,10 +1471,10 @@ static int iSDL_HandlePause(int *pbRunning,
 }
 
 static int iSDL_HandleRedoEvents(SDL_Renderer *pSDL_Renderer,
-                                           int *piRedrawAction,
-                                           PSTRUCT_DECK pstDeck,
-                                           PSTRUCT_MONSTER pastMonsters,
-                                           int iMonsterCt) {
+                                  int *piRedrawAction,
+                                  PSTRUCT_DECK pstDeck,
+                                  PSTRUCT_MONSTER pastMonsters,
+                                  int iMonsterCt) {
 
   if (*piRedrawAction != REDRAW_REDO_EVENTS) {
     return 0;
@@ -1489,11 +1486,51 @@ static int iSDL_HandleRedoEvents(SDL_Renderer *pSDL_Renderer,
 
   return REDRAW_REDO_EVENTS;
 }
+
 void vSDL_DrawBegin(SDL_Renderer *pSDL_Renderer, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonsterCt){
   gstGame.iStatus = STATUS_GAMING;
   vRedraw(pSDL_Renderer, REDRAW_TABLE, pstDeck, pastMonsters, iMonsterCt);
   gstGame.iState = STATE_GAMING_PLAYER_TURN;
 }
+
+static int iSDL_HandleLevelWon(int *pbRunning,
+                                SDL_Renderer *pSDL_Renderer,
+                                int *piRedrawAction,
+                                PSTRUCT_DECK pstDeck,
+                                PSTRUCT_MONSTER pastMonsters,
+                                int *piMonsterCt) {
+  char szMsg[128];
+
+  if (iAnyMonsterAlive(pastMonsters, *piMonsterCt)) {
+    return 0;
+  }
+
+  gstGame.iState = STATE_GAMING_LEVEL_WON;
+
+  memset(szMsg, 0x00, sizeof(szMsg));
+  snprintf(szMsg, sizeof(szMsg), "*** Nivel %d completo! ***", giLevel);
+  vPrintLine(szMsg, NO_NEW_LINE);
+
+  *piRedrawAction = REDRAW_TABLE;
+
+  vAddPlayerReward(&gstPlayer);
+  vEVR_ClearAll();
+
+  if (iSDL_OpenShop(pSDL_Renderer, &gstPlayer, pstDeck) == SHOP_EXIT) {
+    *pbRunning = FALSE;
+    return FINISH_PROGRAM;
+  }
+
+  vRedraw(pSDL_Renderer, *piRedrawAction, pstDeck, pastMonsters, *piMonsterCt);
+
+  giLevel++;
+  vInitMonstersForLevel(pastMonsters, giLevel, piMonsterCt);
+  vStartNewTurn(pstDeck);
+  vTraceDeck(pstDeck, TRACE_DECK_ALL);
+
+  return 1;
+}
+
 void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Renderer, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonsterCt) {
   int iRedrawAction = REDRAW_TABLE;
   int bHasPlayableCards = FALSE;
@@ -1537,24 +1574,8 @@ void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Ren
     }
 
     /** Level cleared? */
-    if (!iAnyMonsterAlive(pastMonsters, iMonsterCt)) {
-      char szMsg[128];
-      gstGame.iState = STATE_GAMING_LEVEL_WON;
-      memset(szMsg, 0x00, sizeof(szMsg));
-      snprintf(szMsg, sizeof(szMsg), "*** Nivel %d completo! ***", giLevel);
-      vPrintLine(szMsg, NO_NEW_LINE);
-      iRedrawAction = REDRAW_TABLE;
-      vAddPlayerReward(&gstPlayer);
-      vEVR_ClearAll();
-      if ( iSDL_OpenShop(pSDL_Renderer, &gstPlayer, pstDeck) == SHOP_EXIT ) {
-        *pbRunning = FALSE;
-        break;
-      }
-      vRedraw(pSDL_Renderer, iRedrawAction, pstDeck, pastMonsters, iMonsterCt);
-      giLevel++;
-      vInitMonstersForLevel(pastMonsters, giLevel, &iMonsterCt);
-      vStartNewTurn(pstDeck);
-      vTraceDeck(pstDeck, TRACE_DECK_ALL);
+    if ( iSDL_HandleLevelWon(pbRunning, pSDL_Renderer, &iRedrawAction, pstDeck, pastMonsters, &iMonsterCt) == FINISH_PROGRAM ){
+      break;
     }
     /** Enemy Turn ? */
     else if (gstPlayer.iEnergy <= 0 || !(bHasPlayableCards = bHasAnyPlayableCard(pstDeck))) {
