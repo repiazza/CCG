@@ -1,3 +1,7 @@
+## <small>9.4.3 (2026-01-14)</small>
+
+* fix: corrected debug macroes call on trace calls ([314328f](https://github.com/repiazza/CCG/commit/314328f))
+
 ## <small>9.4.2 (2026-01-12)</small>
 
 * Merge branch 'main' of https://github.com/repiazza/CCG ([d453610](https://github.com/repiazza/CCG/commit/d453610))
