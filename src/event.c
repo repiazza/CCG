@@ -202,7 +202,7 @@ int iEVENT_HandlePollEv(SDL_Event *pSDL_EVENT_Ev,
 
           /* alvo: self → joga direto */
           if (pstCard->iTarget == CARD_TARGET_SELF) {
-            if ( DEBUG_LVL_DETAILS ) vTraceVarArgsFn("EVENT: target self [%s]", pstCard->szName);
+            if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn("EVENT: target self [%s]", pstCard->szName);
             vPlayCard(&giPendingCard, pstDeck);
             if ( giPendingCard < 0 )
               return giPendingCard;
@@ -220,7 +220,7 @@ int iEVENT_HandlePollEv(SDL_Event *pSDL_EVENT_Ev,
 
           /* alvo: múltiplos → joga direto */
           if (pstCard->iTarget == CARD_TARGET_MULTIPLE) {
-            if ( DEBUG_LVL_DETAILS ) vTraceVarArgsFn("EVENT: target multiple [%s]", pstCard->szName);
+            if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn("EVENT: target multiple [%s]", pstCard->szName);
             vPlayCard(&giPendingCard, pstDeck);
             if ( giPendingCard < 0 )
               return giPendingCard;
@@ -248,7 +248,7 @@ int iEVENT_HandlePollEv(SDL_Event *pSDL_EVENT_Ev,
           }
 
           if (iAlive == 1 && iLastM >= 0) {
-            if ( DEBUG_LVL_DETAILS ) vTraceVarArgsFn("EVENT: auto target [%s] -> monstro %d", pstCard->szName, iLastM);
+            if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn("EVENT: auto target [%s] -> monstro %d", pstCard->szName, iLastM);
             vPlayCard(&giPendingCard, pstDeck);
             if ( giPendingCard < 0 )
               return giPendingCard;

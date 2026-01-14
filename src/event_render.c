@@ -32,6 +32,7 @@ typedef struct {
   char szText[32];
   uint64_t ui64Start;
   uint64_t ui64Dur;
+  int iLastDy;          /* NOVO: último deslocamento desenhado */
 } STRUCT_EVR_POPUP;
 
 typedef struct {
@@ -45,6 +46,7 @@ static STRUCT_EVR_FLASH gastMonFlash[EVR_MAX_MONSTERS];
 static STRUCT_EVR_FLASH gstPlayerFlash;
 
 static uint64_t gui64NowMs = 0;
+static int gbEVR_Dirty = 0;
 
 extern SDL_Rect gMonsterRects[64];
 
@@ -53,6 +55,7 @@ void vEVR_ClearAll(void) {
   memset(gastMonFlash, 0x00, sizeof(gastMonFlash));
   memset(&gstPlayerFlash, 0x00, sizeof(gstPlayerFlash));
   gui64NowMs = 0;
+  gbEVR_Dirty = 0;
 }
 
 static void vEVR_SetMonsterFlash(int iMonsterIdx, SDL_Color stCol, uint64_t ui64Ms) {
@@ -62,12 +65,16 @@ static void vEVR_SetMonsterFlash(int iMonsterIdx, SDL_Color stCol, uint64_t ui64
   gastMonFlash[iMonsterIdx].bActive = 1;
   gastMonFlash[iMonsterIdx].stCol = stCol;
   gastMonFlash[iMonsterIdx].ui64End = gui64NowMs + ui64Ms;
+
+  gbEVR_Dirty = 1;
 }
 
 static void vEVR_SetPlayerFlash(SDL_Color stCol, uint64_t ui64Ms) {
   gstPlayerFlash.bActive = 1;
   gstPlayerFlash.stCol = stCol;
   gstPlayerFlash.ui64End = gui64NowMs + ui64Ms;
+
+  gbEVR_Dirty = 1; 
 }
 
 static void vEVR_PushPopup(int iTargetType, int iTargetIdx, const char *pszText, uint64_t ui64Dur) {
@@ -104,11 +111,14 @@ static void vEVR_PushPopup(int iTargetType, int iTargetIdx, const char *pszText,
   gastPopups[iSlot].iTargetIdx = iTargetIdx;
   gastPopups[iSlot].ui64Start = gui64NowMs;
   gastPopups[iSlot].ui64Dur = (ui64Dur == 0 ? 600 : ui64Dur);
+  gastPopups[iSlot].iLastDy = -999; 
 
   memset(gastPopups[iSlot].szText, 0x00, sizeof(gastPopups[iSlot].szText));
   if (pszText != NULL) {
     strncpy(gastPopups[iSlot].szText, pszText, sizeof(gastPopups[iSlot].szText) - 1);
   }
+
+  gbEVR_Dirty = 1; 
 }
 
 void vEVR_Init(void) {
@@ -128,7 +138,7 @@ void vEVR_PushMonsterDamage(int iMonsterIdx, int iDamage) {
 
   stFlash.r = 220; stFlash.g = 40; stFlash.b = 40; stFlash.a = 90;
 
-  vEVR_PushPopup(EVR_TARGET_MONSTER, iMonsterIdx, szTmp, 700);
+  vEVR_PushPopup(EVR_TARGET_MONSTER, iMonsterIdx, szTmp, 300);
   vEVR_SetMonsterFlash(iMonsterIdx, stFlash, 220);
 }
 
@@ -141,7 +151,7 @@ void vEVR_PushMonsterHeal(int iMonsterIdx, int iHeal) {
 
   stFlash.r = 40; stFlash.g = 200; stFlash.b = 40; stFlash.a = 90;
 
-  vEVR_PushPopup(EVR_TARGET_MONSTER, iMonsterIdx, szTmp, 700);
+  vEVR_PushPopup(EVR_TARGET_MONSTER, iMonsterIdx, szTmp, 300);
   vEVR_SetMonsterFlash(iMonsterIdx, stFlash, 220);
 }
 
@@ -154,7 +164,7 @@ void vEVR_PushMonsterShield(int iMonsterIdx, int iShield) {
 
   stFlash.r = 40; stFlash.g = 120; stFlash.b = 220; stFlash.a = 90;
 
-  vEVR_PushPopup(EVR_TARGET_MONSTER, iMonsterIdx, szTmp, 700);
+  vEVR_PushPopup(EVR_TARGET_MONSTER, iMonsterIdx, szTmp, 300);
   vEVR_SetMonsterFlash(iMonsterIdx, stFlash, 220);
 }
 
@@ -167,7 +177,7 @@ void vEVR_PushPlayerHeal(int iHeal) {
 
   stFlash.r = 40; stFlash.g = 200; stFlash.b = 40; stFlash.a = 90;
 
-  vEVR_PushPopup(EVR_TARGET_PLAYER, 0, szTmp, 700);
+  vEVR_PushPopup(EVR_TARGET_PLAYER, 0, szTmp, 300);
   vEVR_SetPlayerFlash(stFlash, 220);
 }
 
@@ -180,10 +190,11 @@ void vEVR_PushPlayerShield(int iShield) {
 
   stFlash.r = 40; stFlash.g = 120; stFlash.b = 220; stFlash.a = 90;
 
-  vEVR_PushPopup(EVR_TARGET_PLAYER, 0, szTmp, 700);
+  vEVR_PushPopup(EVR_TARGET_PLAYER, 0, szTmp, 300);
   vEVR_SetPlayerFlash(stFlash, 220);
 }
 
+/* --- TICK: só retorna 1 quando algo mudou --- */
 int iEVR_Tick(uint64_t ui64NowMs) {
   int i;
   int bAny;
@@ -191,13 +202,32 @@ int iEVR_Tick(uint64_t ui64NowMs) {
   gui64NowMs = ui64NowMs;
   bAny = 0;
 
+  if (gbEVR_Dirty != 0) {
+    bAny = 1;
+    gbEVR_Dirty = 0;
+  }
+
   for (i = 0; i < EVR_MAX_POPUPS; i++) {
+    uint64_t ui64Age;
+    int iDy;
+
     if (gastPopups[i].bActive == 0)
       continue;
 
     if (gui64NowMs - gastPopups[i].ui64Start >= gastPopups[i].ui64Dur) {
       gastPopups[i].bActive = 0;
-    } else {
+      bAny = 1; 
+      continue;
+    }
+
+    ui64Age = gui64NowMs - gastPopups[i].ui64Start;
+    iDy = 0;
+    if (gastPopups[i].ui64Dur > 0) {
+      iDy = (int)((ui64Age * 24) / gastPopups[i].ui64Dur);
+    }
+
+    if (iDy != gastPopups[i].iLastDy) {
+      gastPopups[i].iLastDy = iDy;
       bAny = 1;
     }
   }
@@ -208,16 +238,14 @@ int iEVR_Tick(uint64_t ui64NowMs) {
 
     if (gui64NowMs >= gastMonFlash[i].ui64End) {
       gastMonFlash[i].bActive = 0;
-    } else {
-      bAny = 1;
+      bAny = 1; 
     }
   }
 
   if (gstPlayerFlash.bActive != 0) {
     if (gui64NowMs >= gstPlayerFlash.ui64End) {
       gstPlayerFlash.bActive = 0;
-    } else {
-      bAny = 1;
+      bAny = 1; 
     }
   }
 

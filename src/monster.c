@@ -34,7 +34,7 @@ void vTraceMonster(PSTRUCT_MONSTER pstMonster){
     pstMonster->iBlock,
     pstMonster->iAttack
   );
-  if ( DEBUG_LVL_DETAILS ) vTraceVarArgsFn("[%s]", szLine);
+  vTraceVarArgsFn("[%s]", szLine);
 
   vTraceDebuffList(pstMonster->astDebuff, pstMonster->iDebuffCt);
 }
@@ -42,7 +42,7 @@ void vTraceMonster(PSTRUCT_MONSTER pstMonster){
 void vTraceMonsters(PSTRUCT_MONSTER pastMonster, int iMonsterCt){
   int ii;
   for (ii = 0; ii < iMonsterCt; ii++) {
-    if ( DEBUG_LVL_DETAILS ) vTraceMonster(&pastMonster[ii]);
+    if ( DEBUG_DIALOG ) vTraceMonster(&pastMonster[ii]);
   }
 }
 
@@ -59,7 +59,7 @@ void vInitMonsters(PSTRUCT_MONSTER pastMonster, int iCount) {
     pastMonster[ii].astDebuff->iRounds = 0;
     pastMonster[ii].iDebuffCt = 0;
   }
-  if ( DEBUG_LVL_DETAILS ) vTraceVarArgsFn("Iniciados %d monstros.", iCount);
+  if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn("Iniciados %d monstros.", iCount);
 }
 
 void vShowDebuffList(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt){
@@ -110,7 +110,7 @@ void vTraceDebuffList(PSTRUCT_DEBUFF pstDebuff, int iDebuffCt){
       pstWrkDbf->iDamage,
       pstWrkDbf->iRounds
     );
-    if ( DEBUG_LVL_DETAILS )
+    if ( DEBUG_MORE_MSGS )
       vTraceVarArgsFn("|-->%s - [%s]", pszDebuffTypeDesc[pstWrkDbf->iType], szLine);
     pstWrkDbf++;
   }
@@ -167,7 +167,7 @@ void vFixDebuffs(PSTRUCT_MONSTER pstMonster) {
     iClearDebuff(&pstMonster->astDebuff[0], pstMonster->iDebuffCt);
     if ( pstMonster->iDebuffCt < 0 ) 
       pstMonster->iDebuffCt = 0;
-    vTraceMonster(pstMonster);
+    if ( DEBUG_DIALOG ) vTraceMonster(pstMonster);
   }
 }
 
@@ -310,7 +310,7 @@ int iAliveMonsterQty(PSTRUCT_MONSTER pastMonster, int iCount) {
       iCt++;
   }
   
-  if ( DEBUG_LVL_DETAILS ) vTraceVarArgsFn("Alive Monsters=%d", iCt);
+  if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn("Alive Monsters=%d", iCt);
 
   return iCt;
 }
@@ -348,7 +348,7 @@ void vInitMonstersForLevel(PSTRUCT_MONSTER pastMonster, int iLevel, int *piOutCo
     pastMonster[ii].iDebuffCt          = 0;
     memset(&pastMonster[ii].astDebuff, 0, sizeof(STRUCT_DEBUFF)*10);
   }
-  if ( DEBUG_LVL_DETAILS ) vTraceVarArgsFn("Nivel %d: iniciados %d monstros.", iLevel, iCount);
+  if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn("Nivel %d: iniciados %d monstros.", iLevel, iCount);
   vTraceMonsters(pastMonster, iCount);
 }
 

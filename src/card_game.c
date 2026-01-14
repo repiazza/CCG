@@ -353,7 +353,7 @@ int CCG_Main(int argc, char *argv[]){
     vFakeOpenShopEarly(&stDeck);
   #endif
 
-  if ( DEBUG_LVL_DETAILS ) vTraceMainLoopInit(); 
+  if ( DEBUG_MORE_MSGS ) vTraceMainLoopInit(); 
 
   #ifdef USE_SDL2
     if ( gbSDL_Mode ){
@@ -366,7 +366,7 @@ int CCG_Main(int argc, char *argv[]){
     vCNSL_MainLoop(&bRunning, &stDeck, astMonsters, iMonsterCount);
   #endif
 
-  if ( DEBUG_LVL_DETAILS ) vTraceMainLoopEnd();
+  if ( DEBUG_MORE_MSGS ) vTraceMainLoopEnd();
   
   vFreeDialog();
   vFreeProgramName();

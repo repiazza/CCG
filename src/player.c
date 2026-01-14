@@ -42,7 +42,7 @@ void vStartNewTurn(PSTRUCT_DECK pstDeck) {
   vDiscardHand(pstDeck);
   iDrawMultipleCard(iCardsToDraw, pstDeck);
   vSortHandByName(pstDeck);
-  vTraceDeck(pstDeck, (TRACE_DISCARD_PILE|TRACE_DRAW_PILE));  
+  if ( DEBUG_DIALOG ) vTraceDeck(pstDeck, (TRACE_DISCARD_PILE|TRACE_DRAW_PILE));  
 }
 
 void vTracePlayer(PSTRUCT_PLAYER pstPlayer){
@@ -63,9 +63,9 @@ void vTracePlayer(PSTRUCT_PLAYER pstPlayer){
     pstPlayer->iBlock,
     pstPlayer->iGold
   );
-  if ( DEBUG_LVL_DETAILS ) vTraceVarArgsFn(szDbg);
-  vTraceDeck(pstPlayer->astPlayerCards, TRACE_DECK_ALL);
-  vTraceDebuffList(pstPlayer->stDebuff, pstPlayer->iDebuffCt);
+  if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn(szDbg);
+  if ( DEBUG_DIALOG ) vTraceDeck(pstPlayer->astPlayerCards, TRACE_DECK_ALL);
+  if ( DEBUG_DIALOG ) vTraceDebuffList(pstPlayer->stDebuff, pstPlayer->iDebuffCt);
 }
 
 void vInitPlayer(PSTRUCT_DECK pstGameDeck, int bReadName){
@@ -204,7 +204,7 @@ int iDoPlayerTurn(int *bRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonst
     vClearTerminal();
     vSortHandByName(pstDeck);
     vShowTable(pstDeck, pastMonster, iMonsterCt);
-    vTraceDeck(pstDeck, TRACE_DECK_ALL);
+    if ( DEBUG_DIALOG ) vTraceDeck(pstDeck, TRACE_DECK_ALL);
   }
   return 0;
 }

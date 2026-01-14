@@ -77,7 +77,7 @@ int gbShopOpen = FALSE;
     /* Painel principal */
     pstPanel = pstSCREEN_GetElementByName("PANEL");
     if ( !pstPanel ) {
-      if ( DEBUG_LVL_DETAILS ) vTraceVarArgsFn("Falha ao obter o elemento PANEL!");
+      if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn("Falha ao obter o elemento PANEL!");
       _exit(1);
     }
 
@@ -243,7 +243,6 @@ int gbShopOpen = FALSE;
           vTraceVarArgsFn("Shop: ouro insuficiente (tem %d, precisa de %d)", pstPlayer->iGold, iPrice);
           vSDL_DrawText(pSDL_Renderer, "Ouro insuficiente!", 320, 520, (SDL_Color){255,100,100,255});
           SDL_RenderPresent(pSDL_Renderer);
-          vSleepSeconds(1);
         } else {
           pstPlayer->iGold -= iPrice;
 
@@ -255,12 +254,11 @@ int gbShopOpen = FALSE;
           }
 
           vAddCardToDiscard(pstDeck, stNewCard);
-          if ( DEBUG_LVL_DETAILS ) vTraceVarArgsFn("Shop: comprou %s. Ouro restante=%d",
+          if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn("Shop: comprou %s. Ouro restante=%d",
                           stNewCard.szName, pstPlayer->iGold);
 
           vSDL_DrawText(pSDL_Renderer, "Compra realizada!", 320, 520, (SDL_Color){180,255,180,255});
           SDL_RenderPresent(pSDL_Renderer);
-          vSleepSeconds(1);
         }
       }
       if (iDoExit || !bHasAnyGoldToBuy(pstPlayer->iGold, &stShop) ) {
@@ -268,7 +266,7 @@ int gbShopOpen = FALSE;
       }
     }
     gbShopOpen = FALSE;
-    return 0;
+    return SHOP_EXIT;
   }
 #endif
 static void vPrintShopHeader(void) {
@@ -354,7 +352,7 @@ void vOpenShop(PSTRUCT_DECK pstDeck)
 
       if ( iUpgradeFirstCardByName(pstDeck, szWhich, 2, 0) ) {
         gstPlayer.iGold -= SHOP_PRICE_UPGRADE;
-        if ( DEBUG_LVL_DETAILS ) vTraceVarArgsFn("Shop: upgrade em '%s' aplicado. Ouro restante=%d", szWhich, gstPlayer.iGold);
+        if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn("Shop: upgrade em '%s' aplicado. Ouro restante=%d", szWhich, gstPlayer.iGold);
         vPrintLine("Upgrade aplicado com sucesso!", INSERT_NEW_LINE);
       } else {
         vPrintLine("Carta nao encontrada em mao/draw/discard.", INSERT_NEW_LINE);
@@ -386,7 +384,7 @@ void vOpenShop(PSTRUCT_DECK pstDeck)
         
       vAddCardToDiscard(pstDeck, stNewCard);
       gstPlayer.iGold -= iPrice;
-      if ( DEBUG_LVL_DETAILS ) vTraceVarArgsFn("Shop: comprou %s. Ouro restante=%d", stNewCard.szName, gstPlayer.iGold);
+      if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn("Shop: comprou %s. Ouro restante=%d", stNewCard.szName, gstPlayer.iGold);
       vPrintLine("Nova carta adicionada ao descarte!", INSERT_NEW_LINE);
       vSleepSeconds(2);
       

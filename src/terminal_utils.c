@@ -36,7 +36,9 @@ char *pszTerminalColors[] ={
 
 void vPrintLine(char *pszLine, int bNewLine) {
   #ifdef USE_SDL2
-    if ( gbSDL_Mode ) vTraceVarArgsFn(pszLine);
+    if ( gbSDL_Mode ) {
+      if (DEBUG_DIALOG) vTraceVarArgsFn(pszLine);
+    }
     else {
       printf("%s", pszLine);
       if ( bNewLine )
@@ -66,7 +68,9 @@ void vPrintLine(char *pszLine, int bNewLine) {
 
 void vPrintHighlitedLine(char *pszLine, int bNewLine) {
   #ifdef USE_SDL2
-    if ( gbSDL_Mode ) vTraceVarArgsFn(pszLine);
+    if ( gbSDL_Mode ) {
+      if (DEBUG_DIALOG) vTraceVarArgsFn(pszLine);
+    }
     else {
       printf("\x1b[7m%s\x1b[0m", pszLine);
       if ( bNewLine )

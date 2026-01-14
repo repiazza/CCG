@@ -26,7 +26,7 @@ void vCNSL_MainLoop(int *pbRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMo
     vClearTerminal();
     vSortHandByName(pstDeck);
     vShowTable(pstDeck, pastMonsters, iMonsterCt);
-    if ( DEBUG_LVL_DETAILS ) vTraceDialog(FALSE);
+    if ( DEBUG_MORE_MSGS ) vTraceDialog(FALSE);
 
     while (gstPlayer.iEnergy > 0 && iAnyMonsterAlive(pastMonsters, iMonsterCt)) {
       if (iDoPlayerTurn(pbRunning, pstDeck, pastMonsters, iMonsterCt))
@@ -71,6 +71,6 @@ void vCNSL_MainLoop(int *pbRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMo
     vSleepSeconds(3);
     gstPlayer.iEnergy = PLAYER_ENERGY_MAX;
 
-    vTraceDeck(pstDeck, TRACE_DECK_ALL);
+    if ( DEBUG_DIALOG ) vTraceDeck(pstDeck, TRACE_DECK_ALL);
   }
 }

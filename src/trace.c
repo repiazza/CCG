@@ -234,7 +234,7 @@ void vInitLogs(char* pszTrace, const char* pszDebugLevel) {
 
   iDIR_SplitFilename(gszTraceFileDialog, szPath2, szName, szExt);
   sprintf(gszTraceFileDialog, "%s/%s%s",szPath,szName,szExt);
-  if ( DEBUG_LVL_DETAILS ) vTraceVarArgsFn("Load OK=[%s]", gszTraceFile);
+  if ( DEBUG_MORE_MSGS ) vTraceVarArgsFn("Load OK=[%s]", gszTraceFile);
 } /* vInitLogs */
 
 void vTraceMainLoopInit(){
