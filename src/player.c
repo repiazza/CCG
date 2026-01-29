@@ -157,7 +157,7 @@ int iDoPlayerTurn(int *bRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonst
   int iIdx;
   char szLine[1024];
 
-  if (!bRunning)
+  if (!*bRunning)
     return 1;
 
   if ( !bHasAnyPlayableCard(pstDeck) )
@@ -172,7 +172,7 @@ int iDoPlayerTurn(int *bRunning, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonst
   iCh = iPortableGetchar();
   if (iCh == 'q')
   {
-    bRunning = FALSE;
+    *bRunning = FALSE;
     return 1;
   }
   if (iCh == 'e')

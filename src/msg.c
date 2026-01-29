@@ -7,17 +7,17 @@
  */
 
 #include <strings.h>
-#include <msg.h>
 #include <xml.h>
 #include <sys_interface.h>
 #include <card_game.h>
 #include <consts.h>
+#include <msg.h>
 
 STRUCT_MSG stWrkMsg;
 int giCtMsg = 0;
 STRUCT_MSG gastMsg[MAX_MSGS];
 
-int icbackMsgXml(xmlNodePtr pstNode, void* pData __attribute((unused)));
+static int icbackMsgXml(xmlNodePtr pstNode, void* pData __attribute__((unused)));
 STRUCT_XML astMsgXml[] = {
   { "MSG_LIST", XMLTYPE_PROC  , 0                      , NULL           , icbackMsgXml },
   { "MSG"     , XMLTYPE_PROC  , 0                      , NULL           , icbackMsgXml },
@@ -25,7 +25,8 @@ STRUCT_XML astMsgXml[] = {
   { "TEXT"    , XMLTYPE_STRING, sizeof(stWrkMsg.szText), stWrkMsg.szText, NULL         },
   { NULL      , XMLTYPE_NULL  , 0                      , NULL           , NULL         }
 };
-int icbackMsgXml(xmlNodePtr pstNode, void* pData __attribute__((unused))) {
+
+static int icbackMsgXml(xmlNodePtr pstNode, void* pData __attribute__((unused))) {
   if ( !strcasecmp((char*)pstNode->name, "MSG_LIST") ) {
     memset(&stWrkMsg, 0x00, sizeof(stWrkMsg));
     iParseXmlFields(pstNode, astMsgXml);

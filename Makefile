@@ -145,8 +145,6 @@ SDL_OBJ = \
     $(OBJ_DIR)/event_render.o \
     $(OBJ_DIR)/event.o \
     $(OBJ_DIR)/welcome.o \
-    $(OBJ_DIR)/hud.o \
-    $(OBJ_DIR)/rect.o \
     $(OBJ_DIR)/screen.o \
     $(OBJ_DIR)/font.o
 endif

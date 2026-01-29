@@ -1667,11 +1667,12 @@ void vSDL_MainLoop(int *pbRunning, SDL_Event *pSDL_Event, SDL_Renderer *pSDL_Ren
       continue;
     }
 
-    /** Level cleared? */
+    /** Level cleared handler */
     if ( iSDL_HandleLevelWon(pbRunning, pSDL_Renderer, &iRedrawAction, pstDeck, pastMonsters, &iMonsterCt) == FINISH_PROGRAM ){
       break;
     }
 
+    /** Enemy turn and Player lost handler */
     if ( iSDL_HandleNonPlayerTurn(pbRunning, pSDL_Renderer, &iRedrawAction, pstDeck, pastMonsters, &iMonsterCt) == FINISH_PROGRAM) {
       break;
     }

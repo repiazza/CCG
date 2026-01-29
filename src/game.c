@@ -94,6 +94,16 @@ void vGameSaveCtxVars(PSTRUCT_GAME_CONTEXT pstGameCtx, PSTRUCT_DECK pstDeck, PST
   pstGameCtx->iCtMonster = iMonsterCt;
 }
 
+
+
+void vGameSetStatus(int iStatus, int iState){
+  gstGame.iLastStatus = gstGame.iStatus;
+  gstGame.iLastState = gstGame.iState;
+
+  gstGame.iStatus = iStatus;
+  gstGame.iState  = iState;
+}
+
 int iGameSave(void) {
   FILE* fpGameDat = NULL;
   char szGameDatPath[512] = "";

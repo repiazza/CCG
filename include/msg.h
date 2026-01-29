@@ -26,7 +26,6 @@ extern STRUCT_MSG gastMsg[MAX_MSGS];
 
 char* pszGetMsgById(int iID);
 int bLoadMsgXml(void);
-
 #ifdef __cplusplus
 }
 #endif

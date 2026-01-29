@@ -21,8 +21,6 @@
   #include <event_render.h>
 #endif
 
-
-
 int bHasAnyPlayableCard(PSTRUCT_DECK pstDeck){
   PSTRUCT_CARD pstCard;
   int iTotalHandCards;
@@ -266,6 +264,7 @@ void vPlayCard(int *iCardIndex, PSTRUCT_DECK pstDeck){
     sprintf(szMsg, "Carta Escolhida: %s", pstCard->szName);
     vPrintHighlitedLine(szMsg, INSERT_NEW_LINE);
   }
+
   *iCardIndex = iWrkCardIx;
 
 }
