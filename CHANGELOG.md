@@ -1,3 +1,7 @@
+## <small>9.4.4 (2026-01-29)</small>
+
+* fix: removed some unused headers functions ([01565c8](https://github.com/repiazza/CCG/commit/01565c8))
+
 ## <small>9.4.3 (2026-01-14)</small>
 
 * fix: corrected debug macroes call on trace calls ([314328f](https://github.com/repiazza/CCG/commit/314328f))
