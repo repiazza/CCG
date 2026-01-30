@@ -115,18 +115,23 @@ int iEVENT_HandlePollEv(SDL_Event *pSDL_EVENT_Ev,
       if ( pSDL_EVENT_Ev->key.keysym.sym == SDLK_SPACE ) {
         char szMsg[32] = "";
         memset(szMsg, 0x00, sizeof(szMsg));
-        switch ( gstGame.iStatus = (gstGame.iStatus == STATUS_PAUSE ? STATUS_GAMING : STATUS_PAUSE) ) {
+        switch (
+          gstGame.iStatus = (
+            gstGame.iStatus == STATUS_PAUSE ?
+              STATUS_GAMING : STATUS_PAUSE
+          )
+        ) {
           case STATUS_PAUSE: {
             // snprintf(szMsg, sizeof(szMsg), "Jogo pausado");
-            gstGame.iLastState = gstGame.iState;
-            gstGame.iState = STATE_PAUSE_GAMING;
+            bGameSetState(STATE_PAUSE_GAMING);
             break;
           }
           case STATUS_GAMING:
           default: {
+            int iLastState = gstGame.iLastState;
             /* TODO: Restore LastStatus function */
-            gstGame.iState = gstGame.iLastState;
-            gstGame.iLastState = STATE_NONE;
+            bGameSetState(STATE_NONE);
+            bGameSetState(iLastState);
             // snprintf(szMsg, sizeof(szMsg), "Jogo despausado");
             break;
           }

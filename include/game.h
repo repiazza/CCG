@@ -90,6 +90,20 @@ extern char* gkpaszGameStatus[];
 extern char* gkpaszGameStates[];
 
 /**
+ * @brief Set status
+ *
+ * @param iStatus Status
+ */
+int bGameSetStatus(int iStatus);
+
+/**
+ * @brief Set state
+ *
+ * @param iState Sub status
+ */
+int bGameSetState(int iState);
+
+/**
  * @brief Create GAME.dat
  *
  * @return 1 success

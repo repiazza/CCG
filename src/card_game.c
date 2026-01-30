@@ -183,9 +183,9 @@ int bInitGlobals(void) {
 
   giLevel = 1;
   gstGame.iLevel = giLevel;
-  gstGame.iStatus = STATUS_WELCOME;
-  gstGame.iLastState = STATE_NONE;
-  gstGame.iState = STATE_WELCOME_BEGIN;
+  bGameSetStatus(STATUS_WELCOME);
+  bGameSetState(STATE_NONE);
+  bGameSetState(STATE_WELCOME_BEGIN);
 
   snprintf(gszDebugLevel, sizeof(gszDebugLevel), "%c", DEBUG_LVL_DETAILS);
   gbSDL_Mode = FALSE;

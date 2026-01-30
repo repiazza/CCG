@@ -96,12 +96,18 @@ void vGameSaveCtxVars(PSTRUCT_GAME_CONTEXT pstGameCtx, PSTRUCT_DECK pstDeck, PST
 
 
 
-void vGameSetStatus(int iStatus, int iState){
+int bGameSetStatus(int iStatus){
+  if ( iStatus < STATUS_NONE || iStatus > STATUS_PAUSE ) return 0;
   gstGame.iLastStatus = gstGame.iStatus;
-  gstGame.iLastState = gstGame.iState;
-
   gstGame.iStatus = iStatus;
+  return 1;
+}
+
+int bGameSetState(int iState) {
+  if ( iState < STATE_NONE || iState > STATE_PAUSE_BAG ) return 0;
+  gstGame.iLastState = gstGame.iState;
   gstGame.iState  = iState;
+  return 1;
 }
 
 int iGameSave(void) {

@@ -34,8 +34,8 @@ int gbWelcomeOpen = FALSE;
 
 #ifdef USE_SDL2
   void vSDL_WelcomeInit(void){
-    gstGame.iStatus = STATUS_WELCOME;
-    gstGame.iState = STATE_WELCOME_BEGIN;
+    bGameSetStatus(STATUS_WELCOME);
+    bGameSetState(STATE_WELCOME_BEGIN);
     return;
   }
 
@@ -62,15 +62,15 @@ int gbWelcomeOpen = FALSE;
       case ACTION_START_NEW_GAME: {
         *pbRunning = FALSE;
         memset(&gstGame, 0x00, sizeof(gstGame));
-        gstGame.iStatus = STATUS_WELCOME;
-        gstGame.iState  = STATE_WELCOME_REGISTRATION_START;
+        bGameSetStatus(STATUS_WELCOME);
+        bGameSetState(STATE_WELCOME_REGISTRATION_START);
         break;
       }
       case ACTION_LOAD_GAME: {
         memset(&gstGame, 0x00, sizeof(gstGame));
-        gstGame.iStatus = STATUS_WELCOME;
-        gstGame.iState  = STATE_WELCOME_LOAD;
-        
+        bGameSetStatus(STATUS_WELCOME);
+        bGameSetState(STATE_WELCOME_LOAD);
+
         if ( iGameLoad() ) {
           *pbRunning = FALSE;
           gbLoadGameFromFile = TRUE;
@@ -82,8 +82,9 @@ int gbWelcomeOpen = FALSE;
       }
       case ACTION_SETTINGS: {
         memset(&gstGame, 0x00, sizeof(gstGame));
-        gstGame.iStatus = STATUS_WELCOME;
-        gstGame.iState  = STATE_WELCOME_CONFIG;
+        bGameSetStatus(STATUS_WELCOME);
+        bGameSetState(STATE_WELCOME_CONFIG);
+
         // pbRunning = FALSE;
         break;
       }
@@ -176,8 +177,9 @@ int gbWelcomeOpen = FALSE;
     }
 
     gbWelcomeOpen = FALSE;
-    gstGame.iStatus = STATUS_WELCOME;
-    gstGame.iState  = STATE_WELCOME_END;
+    bGameSetStatus(STATUS_WELCOME);
+    bGameSetState(STATE_WELCOME_END);
+
     return 0;
   }
 #endif

@@ -1320,27 +1320,22 @@ static int iPauseMenuButtonAction(int *pbRunning, PSTRUCT_ELEMENT pstMenu, SDL_E
   switch ( pstMenu->astItem[pstMenu->iSelectedItemIdx].iAction ) {
     case ACTION_SAVE: {
       *pbRunning = FALSE;
-      gstGame.iLastStatus = gstGame.iStatus;
-      gstGame.iStatus = STATUS_GAMING;
+      bGameSetStatus(STATUS_GAMING);
       gstGame.stGameContext.stPlayer = gstPlayer;
       memcpy(gstGame.stGameContext.astMonster, pastMonster, sizeof(STRUCT_MONSTER) * iCtMonster);
       gstGame.stGameContext.iCtMonster = iCtMonster;
       iGameSave();
       gstGame.iStatus = gstGame.iLastStatus;
-      gstGame.iLastStatus = gstGame.iStatus;
       vSDL_MessageBox(MSG(MSG_GAME_SAVE_WITH_SUCCESS), MSG(MSG_PRESS_ANY_KEY_TO_CONTINUE));
       break;
     }
     case ACTION_SAVE_AND_EXIT: {
       *pbRunning = FALSE;
-      gstGame.iLastStatus = gstGame.iStatus;
-      gstGame.iStatus = STATUS_GAMING;
+      bGameSetStatus(STATUS_GAMING);
       gstGame.stGameContext.stPlayer = gstPlayer;
       memcpy(gstGame.stGameContext.astMonster, pastMonster, sizeof(STRUCT_MONSTER) * iCtMonster);
       gstGame.stGameContext.iCtMonster = iCtMonster;
       iGameSave();
-      gstGame.iStatus = gstGame.iLastStatus;
-      gstGame.iLastStatus = gstGame.iStatus;
       vSDL_MessageBox(MSG(MSG_GAME_SAVE_WITH_SUCCESS), MSG(MSG_EXIT_GAME));
       gstGame.iStatus = (gstGame.iStatus == STATUS_PAUSE ? STATUS_GAMING : STATUS_PAUSE);
       return FINISH_PROGRAM;
@@ -1392,7 +1387,10 @@ int iSDL_OpenPause(SDL_Renderer *pSDL_Renderer, PSTRUCT_MONSTER pastMonster, int
     while ( SDL_PollEvent(&stEvent) ) {
       if ( stEvent.type == SDL_QUIT ) {
         gbPauseOpen = FALSE;
-        gstGame.iStatus = (gstGame.iStatus == STATUS_PAUSE ? STATUS_GAMING : STATUS_PAUSE);
+        gstGame.iStatus = (
+          gstGame.iStatus == STATUS_PAUSE ?
+          STATUS_GAMING : STATUS_PAUSE
+        );
         return FINISH_PROGRAM;
       }
       if ( stEvent.type == SDL_KEYDOWN ) {
@@ -1488,9 +1486,9 @@ static int iSDL_HandleRedoEvents(SDL_Renderer *pSDL_Renderer,
 }
 
 void vSDL_DrawBegin(SDL_Renderer *pSDL_Renderer, PSTRUCT_DECK pstDeck, PSTRUCT_MONSTER pastMonsters, int iMonsterCt){
-  gstGame.iStatus = STATUS_GAMING;
+  bGameSetStatus(STATUS_GAMING);
   vRedraw(pSDL_Renderer, REDRAW_TABLE, pstDeck, pastMonsters, iMonsterCt);
-  gstGame.iState = STATE_GAMING_PLAYER_TURN;
+  bGameSetState(STATE_GAMING_PLAYER_TURN);
 }
 
 static int iSDL_HandleLevelWon(int *pbRunning,
@@ -1559,10 +1557,10 @@ static int iSDL_HandlePlayerDefeat(int *pbRunning,
 
   memset(&gstGame, 0x00, sizeof(gstGame));
   gstGame.iLevel = giLevel;
-  gstGame.iStatus = STATUS_WELCOME;
-  gstGame.iLastStatus = STATUS_NONE;
-  gstGame.iLastState = STATE_NONE;
-  gstGame.iState = STATE_WELCOME_BEGIN;
+  bGameSetStatus(STATUS_NONE);
+  bGameSetStatus(STATUS_WELCOME);
+  bGameSetState(STATE_NONE);
+  bGameSetState(STATE_WELCOME_BEGIN);
 
   vInitMonstersForLevel(pastMonsters, giLevel, piMonsterCt);
   vInitDialog();
@@ -1615,10 +1613,8 @@ int iSDL_HandleNonPlayerTurn(int *pbRunning,
 
   vStartNewTurn(pstDeck);
 
-  gstGame.iStatus = STATUS_GAMING;
-  gstGame.iState = STATE_GAMING_PLAYER_TURN;
-  gstGame.iLastStatus = STATUS_NONE;
-  gstGame.iLastState = STATE_NONE;
+  bGameSetStatus(STATUS_GAMING);
+  bGameSetState(STATE_GAMING_PLAYER_TURN);
 
   if ( DEBUG_SDL_DIALOG ) vTraceDeck(pstDeck, TRACE_DECK_ALL);
 

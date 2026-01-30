@@ -23,7 +23,7 @@
       SDL_Rect     pSDL_IMGDst;  /* opcional */
     }STRUCT_IMAGE;
 
-    extern STRUCT_IMAGE gImages[MAX_IMAGES];
+    extern STRUCT_IMAGE gstImages[MAX_IMAGES];
     extern int giImageCount;
 
     int  bLoadImgListFromFile();
