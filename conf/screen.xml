@@ -144,7 +144,7 @@
           <H>460</H>
         </RECT>
       </ELEMENT>
-      <ELEMENT>
+      <aELEMENT>
         <ID>2</ID>
         <NAME>TITLE</NAME>
         <TEXT>SHOP</TEXT>
@@ -160,7 +160,7 @@
           <B>225</B>
           <A>225</A>
         </FG_COLOR>
-      </ELEMENT>
+      </aELEMENT>
       <ELEMENT>
         <ID>3</ID>
         <NAME>BUY_BUTTON</NAME>

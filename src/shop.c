@@ -67,7 +67,7 @@ int gbShopOpen = FALSE;
     PSTRUCT_ELEMENT pstExitBtn = NULL;
     PSTRUCT_ELEMENT pstExitBtnLabel = NULL;
     PSTRUCT_ELEMENT pstGoldLabel = NULL;
-      int ii = 0;
+    int ii = 0;
     int iPadX;
     int iUsableW;
     int iSlotW;
@@ -98,8 +98,8 @@ int gbShopOpen = FALSE;
     SDL_RenderDrawRect(pSDL_Renderer, (SDL_Rect*) &pstPanel->stRect);
 
     /* Título */
-    pstTitle = pstSCREEN_GetElementByName("TITLE");
-    vSDL_DrawText(pSDL_Renderer, pstTitle->szText, pstTitle->stRect.x, pstTitle->stRect.y, *(SDL_Color*)&pstTitle->stFgColor);
+    // pstTitle = pstSCREEN_GetElementByName("TITLE");
+    // vSDL_DrawText(pSDL_Renderer, pstTitle->szText, pstTitle->stRect.x, pstTitle->stRect.y, *(SDL_Color*)&pstTitle->stFgColor);
 
     /* Itens da loja */
     iX = pstPanel->stRect.x + 40;
@@ -141,18 +141,19 @@ int gbShopOpen = FALSE;
     iUsableW = pstPanel->stRect.w - iPadX * 2;
     iSlotW = iUsableW / iPlayerCards;
     
-    for ( pstImg = pIMG_GetFirstType(IMAGE_TYPE_PLAYER_CARD);
-          pstImg != NULL; 
-          pstImg = pIMG_GetNextType(IMAGE_TYPE_PLAYER_CARD) ) {
+    pstGoldLabel = pstSCREEN_GetElementByName("Gold");
+    for ( pstImg = pIMG_GetFirstType(IMAGE_TYPE_PLAYER_CARD); pstImg != NULL; pstImg = pIMG_GetNextType(IMAGE_TYPE_PLAYER_CARD) ) {
       SDL_Rect stRectCard;
-      int iCardMaxW;
-      int iCardMinW;
-      int iSlotInnerW;
-      int iCardW;
-      int iCardH;
-      int iR;
-      int iG;
-      int iB;
+      int iCardMaxW = 0;
+      int iCardMinW = 0;
+      int iSlotInnerW = 0;
+      int iCardW = 0;
+      int iCardH = 0;
+      int iR = 0;
+      int iG = 0;
+      int iB = 0;
+
+      memset(&stRectCard, 0x00, sizeof(stRectCard));
 
       if ( DEBUG_SDL_DIALOG ) vIMG_Trace(pstImg);
 
@@ -172,54 +173,55 @@ int gbShopOpen = FALSE;
       stRectCard.w = iCardW;
       stRectCard.h = iCardH;
       stRectCard.x = pstPanel->stRect.x + iPadX + ii * iSlotW + (iSlotW - stRectCard.w) / 2;
-      stRectCard.y = pstPanel->stRect.y + pstPanel->stRect.h - stRectCard.h - 20;
-      
+      stRectCard.y = pstPanel->stRect.y + 10;
+      vSDL_DrawText(pSDL_Renderer, "8000", stRectCard.x+(int)(iCardW/3)-5,stRectCard.y+iCardH+5, *(SDL_Color*)&pstGoldLabel->stFgColor);
 
       // if (ii < MAX_IMAGES) {
 
-        iR = 200;
-        iG = 200;
-        iB = 200;
+      iR = 200;
+      iG = 200;
+      iB = 200;
 
-        if ( pstImg->pSDL_Txtr != NULL ) {
-          vIMG_RenderScaled(pSDL_Renderer, pstImg, &stRectCard, 1.0, TRUE);
+      if ( pstImg->pSDL_Txtr != NULL ) {
+        vIMG_RenderScaled(pSDL_Renderer, pstImg, &stRectCard, 1.0, TRUE);
+      }
+      else {
+        SDL_SetRenderDrawColor(pSDL_Renderer, iR, iG, iB, 255);
+        SDL_RenderFillRect(pSDL_Renderer, &stRectCard);
+      }
+
+        {
+          int bSel;
+          int bHover;
+          int iK;
+          SDL_Rect stTmp;
+
+          // bSel = (ii == giPendingCard);
+          // bHover = (ii == giHoverCard);
+
+          // stTmp = stRectCard;
+
+          // if (bSel) {
+          //   SDL_SetRenderDrawColor(pSDL_Renderer, 240, 200, 20, 255);
+          //   for (iK = 0; iK < 3; iK++) {
+          //     SDL_RenderDrawRect(pSDL_Renderer, &stTmp);
+          //     stTmp.x -= 1; stTmp.y -= 1;
+          //     stTmp.w += 2; stTmp.h += 2;
+          //   }
+          // } else if (bHover) {
+          //   SDL_SetRenderDrawColor(pSDL_Renderer, 255, 255, 255, 255);
+          //   for (iK = 0; iK < 2; iK++) {
+          //     SDL_RenderDrawRect(pSDL_Renderer, &stTmp);
+          //     stTmp.x -= 1; stTmp.y -= 1;
+          //     stTmp.w += 2; stTmp.h += 2;
+          //   }
+          // } else {
+            SDL_SetRenderDrawColor(pSDL_Renderer, 30, 30, 30, 255);
+            SDL_RenderDrawRect(pSDL_Renderer, &stRectCard);
+          // }
         }
-        else {
-          SDL_SetRenderDrawColor(pSDL_Renderer, iR, iG, iB, 255);
-          SDL_RenderFillRect(pSDL_Renderer, &stRectCard);
-        }
-
-      //   {
-      //     int bSel;
-      //     int bHover;
-      //     int iK;
-      //     SDL_Rect stTmp;
-
-      //     bSel = (ii == giPendingCard);
-      //     bHover = (ii == giHoverCard);
-
-      //     stTmp = stRectCard;
-
-      //     if (bSel) {
-      //       SDL_SetRenderDrawColor(pSDL_Renderer, 240, 200, 20, 255);
-      //       for (iK = 0; iK < 3; iK++) {
-      //         SDL_RenderDrawRect(pSDL_Renderer, &stTmp);
-      //         stTmp.x -= 1; stTmp.y -= 1;
-      //         stTmp.w += 2; stTmp.h += 2;
-      //       }
-      //     } else if (bHover) {
-      //       SDL_SetRenderDrawColor(pSDL_Renderer, 255, 255, 255, 255);
-      //       for (iK = 0; iK < 2; iK++) {
-      //         SDL_RenderDrawRect(pSDL_Renderer, &stTmp);
-      //         stTmp.x -= 1; stTmp.y -= 1;
-      //         stTmp.w += 2; stTmp.h += 2;
-      //       }
-      //     } else {
-      //       SDL_SetRenderDrawColor(pSDL_Renderer, 30, 30, 30, 255);
-      //       SDL_RenderDrawRect(pSDL_Renderer, &stRectCard);
-      //     }
-      //   }
       // }
+      ii++;
     }
 
     /* Botão BUY */
@@ -249,7 +251,6 @@ int gbShopOpen = FALSE;
     vSDL_DrawText(pSDL_Renderer, pstExitBtnLabel->szText, pstExitBtnLabel->stRect.x, pstExitBtnLabel->stRect.y, *(SDL_Color*)&pstExitBtnLabel->stFgColor);
 
     /* Ouro atual */
-    pstGoldLabel = pstSCREEN_GetElementByName("Gold");
     snprintf(szBuffer, sizeof(szBuffer), "%s: %d", pstGoldLabel->szText, pstPlayer->iGold);
     vSDL_DrawText(pSDL_Renderer, szBuffer, pstGoldLabel->stRect.x, pstGoldLabel->stRect.y, *(SDL_Color*)&pstGoldLabel->stFgColor);
     
