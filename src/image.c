@@ -13,6 +13,7 @@
 
   STRUCT_IMAGE stWrkImage;
   STRUCT_IMAGE gstImages[MAX_IMAGES];
+  int giCurrImg;
   int giImageCount = 0;
 
   int icbackImageXml(xmlNode* pstNode, void* pData __attribute__((unused)));
@@ -132,12 +133,21 @@
     vTraceVarArgsFn(" Path=[%s]", gstImages[iIdx].szPath);
     vTraceVarArgsFn("============================");
   }
+
   void vIMG_TraceList(){
     int ii = 0;
     while ( ii < giImageCount ) {
       vIMG_TraceIdx(ii);
       ii++;
     }
+  }
+  
+  void vIMG_Trace(PSTRUCT_IMAGE pstImg){
+    vTraceVarArgsFn("========= IMG LIST =========");
+    vTraceVarArgsFn(" Type=[%d]", pstImg->iType);
+    vTraceVarArgsFn(" Id  =[%d]", pstImg->iCardId);
+    vTraceVarArgsFn(" Path=[%s]", pstImg->szPath);
+    vTraceVarArgsFn("============================");
   }
 
   STRUCT_IMAGE *pIMG_FindFirstById(int iCardId){
@@ -156,6 +166,50 @@
     return NULL;
   }
 
+  int iGetCardTypeTotalCount(int iType){
+    int ii = 0;
+    int iRsl = 0;
+    while ( ii < giImageCount ) {
+      if ( gstImages[ii].iType == iType ) iRsl++;
+      ii++;
+    }
+    return iRsl;
+  }
+
+  PSTRUCT_IMAGE pIMG_GetFirstType(int iType){
+    PSTRUCT_IMAGE pstImg;
+    int ii = 0;
+    giCurrImg = 0;
+
+    while ( ii < giImageCount ) {
+      if ( gstImages[ii].iType == iType ){
+        pstImg = &gstImages[ii];
+        giCurrImg = ii; 
+        return pstImg;
+      }
+      ii++;
+    }
+
+    return NULL;
+  }
+
+  PSTRUCT_IMAGE pIMG_GetNextType(int iType){
+    PSTRUCT_IMAGE pstImg;
+    int ii = giCurrImg;
+
+    ii++;
+    while ( ii < giImageCount ) {
+      if ( gstImages[ii].iType == iType ){
+        pstImg = &gstImages[ii];
+        giCurrImg = ii; 
+        return pstImg;
+      }
+      ii++; 
+    }
+
+    return NULL;
+  }
+  
   STRUCT_IMAGE *pIMG_GetNextByType(int iType, int iIndex){
     int i;
     int iCount;

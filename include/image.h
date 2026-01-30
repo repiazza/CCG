@@ -21,10 +21,7 @@
       SDL_Texture  *pSDL_Txtr;
       SDL_Rect     pSDL_IMGRect; /* SEMPRE 280x300 */
       SDL_Rect     pSDL_IMGDst;  /* opcional */
-    }STRUCT_IMAGE;
-
-    extern STRUCT_IMAGE gstImages[MAX_IMAGES];
-    extern int giImageCount;
+    }STRUCT_IMAGE, *PSTRUCT_IMAGE;
 
     int  bLoadImgListFromFile();
     void vIMG_TraceList();
@@ -42,6 +39,9 @@
                            SDL_Rect *pstDst,
                            double dScale,
                            int bKeepAspect);
-
+    PSTRUCT_IMAGE pIMG_GetFirstType(int iType);
+    PSTRUCT_IMAGE pIMG_GetNextType(int iType);
+    int iGetCardTypeTotalCount(int iType);
+    void vIMG_Trace(PSTRUCT_IMAGE pstImg);
   #endif
 #endif

@@ -53,13 +53,13 @@ int gbShopOpen = FALSE;
 
   /* Desenha o Shop completo */
   int iShopDraw(SDL_Renderer *pSDL_Renderer, PSTRUCT_SHOP pstShop, PSTRUCT_PLAYER pstPlayer){
-    SDL_Rect stItem;
-    SDL_Color stCorBranco = {255, 255, 255, 255};
-    SDL_Color stCorAmarelo = {255, 215, 0, 255};
-    char szBuffer[64] = "";
     int i = 0;
     int iX = 0;
     int iY = 0;
+    char szBuffer[64] = "";
+    SDL_Rect stItem;
+    SDL_Color stCorBranco = {255, 255, 255, 255};
+    SDL_Color stCorAmarelo = {255, 215, 0, 255};
     PSTRUCT_ELEMENT pstPanel = NULL;
     PSTRUCT_ELEMENT pstTitle = NULL;
     PSTRUCT_ELEMENT pstBuyBtn = NULL;
@@ -67,6 +67,15 @@ int gbShopOpen = FALSE;
     PSTRUCT_ELEMENT pstExitBtn = NULL;
     PSTRUCT_ELEMENT pstExitBtnLabel = NULL;
     PSTRUCT_ELEMENT pstGoldLabel = NULL;
+      int ii = 0;
+    int iPadX;
+    int iUsableW;
+    int iSlotW;
+    int iPlayerCards;
+    int jj = 0;
+    PSTRUCT_IMAGE pstImg = NULL;
+
+    if ( DEBUG_SDL_MSGS ) vTraceBegin();
 
     if (pSDL_Renderer == NULL || pstShop == NULL || pstPlayer == NULL)
       return -1;
@@ -124,104 +133,95 @@ int gbShopOpen = FALSE;
     /* --------------------- */
     /*    CARTAS PLAYER      */
     /* --------------------- */
-    if (giImageCount > 0) {
-      int ii = 0;
-      int iPadX;
-      int iUsableW;
-      int iSlotW;
-      int iPlayerCards = 0;
-      int jj = 0;
-      STRUCT_IMAGE stImages[MAX_IMAGES];
 
-      for (ii = 0; ii < giImageCount; ii++) {
-        if ( gstImages[ii].iType == IMAGE_TYPE_MONSTER ) continue;
-        iPlayerCards++;
-        stImages[jj] = gstImages[ii];
-      }
+    iPlayerCards = iGetCardTypeTotalCount(IMAGE_TYPE_PLAYER_CARD);
+    if ( DEBUG_SDL_MORE_MSGS ) vTraceVarArgsFn("iPlayerCards = %d", iPlayerCards);
+    
+    iPadX = 24;
+    iUsableW = pstPanel->stRect.w - iPadX * 2;
+    iSlotW = iUsableW / iPlayerCards;
+    
+    for ( pstImg = pIMG_GetFirstType(IMAGE_TYPE_PLAYER_CARD);
+          pstImg != NULL; 
+          pstImg = pIMG_GetNextType(IMAGE_TYPE_PLAYER_CARD) ) {
+      SDL_Rect stRectCard;
+      int iCardMaxW;
+      int iCardMinW;
+      int iSlotInnerW;
+      int iCardW;
+      int iCardH;
+      int iR;
+      int iG;
+      int iB;
 
-      iPadX = 24;
-      iUsableW = pstPanel->stRect.w - iPadX * 2;
-      iSlotW = iUsableW / giImageCount;
+      if ( DEBUG_SDL_DIALOG ) vIMG_Trace(pstImg);
 
-      for (ii = 0; ii < giImageCount; ii++) {
-        SDL_Rect stRectCard;
-        int iCardMaxW;
-        int iCardMinW;
-        int iSlotInnerW;
-        int iCardW;
-        int iCardH;
+      iCardMaxW = 140;
+      iCardMinW = 60;
 
-        iCardMaxW = 140;
-        iCardMinW = 60;
+      iSlotInnerW = iSlotW - 8;
+      iCardW = iSlotInnerW;
 
-        iSlotInnerW = iSlotW - 8;
-        iCardW = iSlotInnerW;
+      if (iCardW > iCardMaxW)
+        iCardW = iCardMaxW;
+      if (iCardW < iCardMinW)
+        iCardW = iCardMinW;
 
-        if (iCardW > iCardMaxW)
-          iCardW = iCardMaxW;
-        if (iCardW < iCardMinW)
-          iCardW = iCardMinW;
+      iCardH = (iCardW * 300) / 280;
 
-        iCardH = (iCardW * 300) / 280;
+      stRectCard.w = iCardW;
+      stRectCard.h = iCardH;
+      stRectCard.x = pstPanel->stRect.x + iPadX + ii * iSlotW + (iSlotW - stRectCard.w) / 2;
+      stRectCard.y = pstPanel->stRect.y + pstPanel->stRect.h - stRectCard.h - 20;
+      
 
-        stRectCard.w = iCardW;
-        stRectCard.h = iCardH;
-        stRectCard.x = pstPanel->stRect.x + iPadX + ii * iSlotW + (iSlotW - stRectCard.w) / 2;
-        stRectCard.y = pstPanel->stRect.y + pstPanel->stRect.h - stRectCard.h - 20;
+      // if (ii < MAX_IMAGES) {
 
-        if (ii < (int)(sizeof(gCardRects) / sizeof(gCardRects[0])))
-          gCardRects[ii] = stRectCard;
+        iR = 200;
+        iG = 200;
+        iB = 200;
 
-        if (ii < MAX_IMAGES) {
-          int iR;
-          int iG;
-          int iB;
-
-          iR = 200;
-          iG = 200;
-          iB = 200;
-
-          if ( stImages[ii].pSDL_Txtr != NULL ) {
-            vIMG_RenderScaled(pSDL_Renderer, &stImages[ii], &stRectCard, 1.0, TRUE);
-          }
-          else {
-            SDL_SetRenderDrawColor(pSDL_Renderer, iR, iG, iB, 255);
-            SDL_RenderFillRect(pSDL_Renderer, &stRectCard);
-          }
-
-          {
-            int bSel;
-            int bHover;
-            int iK;
-            SDL_Rect stTmp;
-
-            bSel = (ii == giPendingCard);
-            bHover = (ii == giHoverCard);
-
-            stTmp = stRectCard;
-
-            if (bSel) {
-              SDL_SetRenderDrawColor(pSDL_Renderer, 240, 200, 20, 255);
-              for (iK = 0; iK < 3; iK++) {
-                SDL_RenderDrawRect(pSDL_Renderer, &stTmp);
-                stTmp.x -= 1; stTmp.y -= 1;
-                stTmp.w += 2; stTmp.h += 2;
-              }
-            } else if (bHover) {
-              SDL_SetRenderDrawColor(pSDL_Renderer, 255, 255, 255, 255);
-              for (iK = 0; iK < 2; iK++) {
-                SDL_RenderDrawRect(pSDL_Renderer, &stTmp);
-                stTmp.x -= 1; stTmp.y -= 1;
-                stTmp.w += 2; stTmp.h += 2;
-              }
-            } else {
-              SDL_SetRenderDrawColor(pSDL_Renderer, 30, 30, 30, 255);
-              SDL_RenderDrawRect(pSDL_Renderer, &stRectCard);
-            }
-          }
+        if ( pstImg->pSDL_Txtr != NULL ) {
+          vIMG_RenderScaled(pSDL_Renderer, pstImg, &stRectCard, 1.0, TRUE);
         }
-      }
+        else {
+          SDL_SetRenderDrawColor(pSDL_Renderer, iR, iG, iB, 255);
+          SDL_RenderFillRect(pSDL_Renderer, &stRectCard);
+        }
+
+      //   {
+      //     int bSel;
+      //     int bHover;
+      //     int iK;
+      //     SDL_Rect stTmp;
+
+      //     bSel = (ii == giPendingCard);
+      //     bHover = (ii == giHoverCard);
+
+      //     stTmp = stRectCard;
+
+      //     if (bSel) {
+      //       SDL_SetRenderDrawColor(pSDL_Renderer, 240, 200, 20, 255);
+      //       for (iK = 0; iK < 3; iK++) {
+      //         SDL_RenderDrawRect(pSDL_Renderer, &stTmp);
+      //         stTmp.x -= 1; stTmp.y -= 1;
+      //         stTmp.w += 2; stTmp.h += 2;
+      //       }
+      //     } else if (bHover) {
+      //       SDL_SetRenderDrawColor(pSDL_Renderer, 255, 255, 255, 255);
+      //       for (iK = 0; iK < 2; iK++) {
+      //         SDL_RenderDrawRect(pSDL_Renderer, &stTmp);
+      //         stTmp.x -= 1; stTmp.y -= 1;
+      //         stTmp.w += 2; stTmp.h += 2;
+      //       }
+      //     } else {
+      //       SDL_SetRenderDrawColor(pSDL_Renderer, 30, 30, 30, 255);
+      //       SDL_RenderDrawRect(pSDL_Renderer, &stRectCard);
+      //     }
+      //   }
+      // }
     }
+
     /* Botão BUY */
     pstBuyBtn = pstSCREEN_GetElementByName("BUY_BUTTON");
     gstButtonBuy.x = pstBuyBtn->stRect.x;
@@ -254,6 +254,8 @@ int gbShopOpen = FALSE;
     vSDL_DrawText(pSDL_Renderer, szBuffer, pstGoldLabel->stRect.x, pstGoldLabel->stRect.y, *(SDL_Color*)&pstGoldLabel->stFgColor);
     
     SDL_RenderPresent(pSDL_Renderer);
+
+    if ( DEBUG_SDL_MSGS ) vTraceEnd();
     return 0;
   }
   int bHasAnyGoldToBuy(int iPlayerGold, STRUCT_SHOP *pstShop){
@@ -265,6 +267,7 @@ int gbShopOpen = FALSE;
       if (iPlayerGold >= pstShop->aItems[ii].iPrice)
         return TRUE;
     }
+    
     return FALSE;
   }
   int iSDL_OpenShop(SDL_Renderer *pSDL_Renderer, PSTRUCT_PLAYER pstPlayer, PSTRUCT_DECK pstDeck){
