@@ -1,3 +1,9 @@
+## 9.5.0 (2026-01-30)
+
+* feat: Shop visual rework - change textual menu to card images ([7207ec0](https://github.com/repiazza/CCG/commit/7207ec0))
+* chore: Commit for live share state machine ([92a24c1](https://github.com/repiazza/CCG/commit/92a24c1))
+* chore: shop rework live share ([9541a5e](https://github.com/repiazza/CCG/commit/9541a5e))
+
 ## <small>9.4.4 (2026-01-29)</small>
 
 * fix: removed some unused headers functions ([01565c8](https://github.com/repiazza/CCG/commit/01565c8))
