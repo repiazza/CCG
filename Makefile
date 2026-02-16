@@ -165,7 +165,6 @@ SDL_OBJ = \
     $(OBJ_DIR)/event_render.o \
     $(OBJ_DIR)/event.o \
     $(OBJ_DIR)/welcome.o \
-    $(OBJ_DIR)/screen.o \
     $(OBJ_DIR)/font.o
 endif
 
@@ -179,6 +178,7 @@ CARD_GAME_EXEC = card_game
 
 OBJS = \
     $(OBJ_DIR)/card_game.o \
+    $(OBJ_DIR)/screen.o \
     $(SDL_OBJ) \
     $(RAYLIB_OBJ) \
     $(OBJ_DIR)/sys_interface.o \
