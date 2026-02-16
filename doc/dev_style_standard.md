@@ -39,7 +39,7 @@ Este projeto segue regras obrigatórias de estilo e compatibilidade para manter 
 - `psz` ponteiro para string: `char *pszBuffer;`
 - `kpsz` ponteiro const para string: `const char *kpszName;`
 - `gi` inteiro global: `int giFlag;`
-- `ui` unsigned long: `unsigned long uiValue;`
+- `ul` unsigned long: `unsigned long uiValue;`
 - `ast` array estático de structs: `STRUCT_PLAYER astPlayer[MAX_PLAYER];`
 - Ponteiros para struct tipada:
   - `PSTRUCT_PLAYER pstPlayer;` (ponteiro de STRUCT_PLAYER)
