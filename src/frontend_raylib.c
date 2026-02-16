@@ -42,6 +42,8 @@ static void vFRL_BeginFrame(void) {
 
 static void vFRL_EndFrame(void) {
 #ifdef USE_RAYLIB
+  DrawText("CCG - Raylib MVP", 20, 20, 30, RAYWHITE);
+  DrawText("Feche a janela para sair", 20, 60, 20, GRAY);
   EndDrawing();
 #endif
 }
