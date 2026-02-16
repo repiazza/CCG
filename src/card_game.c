@@ -315,6 +315,7 @@ int CCG_Main(int argc, char *argv[]){
 #ifdef USE_RAYLIB
   STRUCT_CCG_EVENT stFrontendEvent;
   int iHasEvent;
+  int bQuitRequested;
 #endif
 #ifdef USE_SDL2
   SDL_Window *pSDL_Wndw = NULL;
@@ -330,6 +331,7 @@ int CCG_Main(int argc, char *argv[]){
 #ifdef USE_RAYLIB
   memset(&stFrontendEvent, 0x00, sizeof(stFrontendEvent));
   iHasEvent = FALSE;
+  bQuitRequested = FALSE;
 #endif
 
   vSetProgramName(argv);
@@ -379,6 +381,8 @@ int CCG_Main(int argc, char *argv[]){
     geBackend = CCG_BACKEND_RAYLIB;
   }
 
+  vInitLogs(gstGlobalPrm.szTrace, gstGlobalPrm.szDebugLevel);
+
   if ( geBackend == CCG_BACKEND_SDL2 ) {
     #ifndef USE_SDL2
       fprintf(stderr, "Backend SDL2 solicitado, mas este binario nao foi compilado com USE_SDL2.\n");
@@ -426,13 +430,10 @@ int CCG_Main(int argc, char *argv[]){
         return -1;
       }
 
-      fprintf(stdout, "Raylib MVP inicializado. Feche a janela para sair.\n");
+      vTraceVarArgsFn("Raylib MVP inicializado. Feche a janela para sair.");
       while ( !pkstFrontendApi->piShouldQuit() ) {
 
-        if ( pkstFrontendApi->pfnBeginFrame != NULL ) {
-          pkstFrontendApi->pfnBeginFrame();
-        }
-
+        bQuitRequested = FALSE;
         while ( TRUE ) {
           iHasEvent = pkstFrontendApi->piPollEvent(&stFrontendEvent);
           if ( !iHasEvent ) {
@@ -440,12 +441,17 @@ int CCG_Main(int argc, char *argv[]){
           }
           vCG_HandleFrontendEvent(&stFrontendEvent);
           if ( stFrontendEvent.eType == CCG_EVT_QUIT ) {
+            bQuitRequested = TRUE;
             break;
           }
         }
 
-        if ( stFrontendEvent.eType == CCG_EVT_QUIT ) {
+        if ( bQuitRequested || pkstFrontendApi->piShouldQuit() ) {
           break;
+        }
+
+        if ( pkstFrontendApi->pfnBeginFrame != NULL ) {
+          pkstFrontendApi->pfnBeginFrame();
         }
 
         if ( pkstFrontendApi->pfnEndFrame != NULL ) {
@@ -461,8 +467,6 @@ int CCG_Main(int argc, char *argv[]){
     #endif
   }
   
-  vInitLogs(gstGlobalPrm.szTrace, gstGlobalPrm.szDebugLevel);
-
   if ( !bLoadMsgXml() ) {
     fprintf(stderr, "Erro ao ler o arquivo msg.xml!\n");
     return 0;

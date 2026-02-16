@@ -6,8 +6,6 @@
  * Description: Screen module
  */
 
-#ifdef USE_SDL2
-
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
@@ -398,6 +396,3 @@ int bInsertItemInElement(int iElmId, PSTRUCT_SCREEN_ITEM pstItem) {
   pstElement->astItem[pstElement->iCtItems] = *pstItem;
   return TRUE;
 }
-
-#endif
-
