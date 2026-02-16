@@ -1,3 +1,7 @@
+## <small>9.8.2 (2026-02-16)</small>
+
+* fix: raylib frame loop shutdown and logging init order ([4248544](https://github.com/repiazza/CCG/commit/4248544))
+
 ## <small>9.8.1 (2026-02-16)</small>
 
 * fix(raylib): use trace logging for frontend input bridge ([bb45086](https://github.com/repiazza/CCG/commit/bb45086))
