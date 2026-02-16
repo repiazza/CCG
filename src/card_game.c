@@ -27,6 +27,7 @@
   #include <frontend_sdl2.h>
 #endif
 #ifdef USE_RAYLIB
+  #include <raylib.h>
   #include <frontend_raylib.h>
 #endif
 #include <sys_interface.h>
@@ -400,6 +401,7 @@ int CCG_Main(int argc, char *argv[]){
         if (iHasEvent && stFrontendEvent.eType == CCG_EVT_QUIT) {
           break;
         }
+        WaitTime(0.01);
       }
 
       if (pkstFrontendApi->pfnShutdown != NULL) {

@@ -110,7 +110,11 @@ static float fFRL_GetDeltaTime(void) {
 }
 
 static int iFRL_ShouldQuit(void) {
+#ifdef USE_RAYLIB
+  return (gbFRL_ShouldQuit || WindowShouldClose());
+#else
   return gbFRL_ShouldQuit;
+#endif
 }
 
 static const STRUCT_FRONTEND_API gkstFrontendRaylibApi = {
