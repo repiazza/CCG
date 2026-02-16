@@ -3,7 +3,6 @@
 #include <frontend_api.h>
 #include <frontend_raylib.h>
 #include <consts.h>
-// #include <sys_interface.h>
 
 #define FRL_WINDOW_WIDTH  800
 #define FRL_WINDOW_HEIGHT 600
