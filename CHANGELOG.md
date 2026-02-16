@@ -1,3 +1,7 @@
+## 9.7.0 (2026-02-16)
+
+* feat: implemented raylib window MVP ([ecb16d9](https://github.com/repiazza/CCG/commit/ecb16d9))
+
 ## 9.6.0 (2026-02-16)
 
 * feat: Refine SDL2 frontend MVP teardown docs and left-click handling ([98c9510](https://github.com/repiazza/CCG/commit/98c9510))
