@@ -401,8 +401,17 @@ int CCG_Main(int argc, char *argv[]){
           pkstFrontendApi->pfnBeginFrame();
         }
 
-        iHasEvent = pkstFrontendApi->piPollEvent(&stFrontendEvent);
-        if ( iHasEvent && stFrontendEvent.eType == CCG_EVT_QUIT ) {
+        while ( TRUE ) {
+          iHasEvent = pkstFrontendApi->piPollEvent(&stFrontendEvent);
+          if ( !iHasEvent ) {
+            break;
+          }
+          if ( stFrontendEvent.eType == CCG_EVT_QUIT ) {
+            break;
+          }
+        }
+
+        if ( stFrontendEvent.eType == CCG_EVT_QUIT ) {
           break;
         }
 
