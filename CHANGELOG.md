@@ -1,3 +1,7 @@
+## <small>9.7.1 (2026-02-16)</small>
+
+* fix: compilation conflict with wingl api ([5592169](https://github.com/repiazza/CCG/commit/5592169))
+
 ## 9.7.0 (2026-02-16)
 
 * feat: implemented raylib window MVP ([ecb16d9](https://github.com/repiazza/CCG/commit/ecb16d9))
