@@ -24,6 +24,7 @@
 #include <console_api.h>
 #ifdef USE_SDL2
   #include <sdl_api.h>
+  #include <frontend_sdl2.h>
 #endif
 #include <sys_interface.h>
 #include <card_game.h>
@@ -341,6 +342,17 @@ int CCG_Main(int argc, char *argv[]){
       return -1;
     #endif
     gbSDL_Mode = TRUE; /** legacy mirror of geBackend */
+    #ifdef USE_SDL2
+      pkstFrontendApi = pkstFSDL2_GetApi();
+      if (pkstFrontendApi == NULL || pkstFrontendApi->piInit == NULL) {
+        fprintf(stderr, "Falha ao carregar frontend SDL2.\n");
+        return -1;
+      }
+      if (pkstFrontendApi->piInit() == FALSE) {
+        fprintf(stderr, "Falha ao inicializar frontend SDL2.\n");
+        return -1;
+      }
+    #endif
   }
 
   if ( geBackend == CCG_BACKEND_TERMINAL ) {
@@ -427,8 +439,7 @@ int CCG_Main(int argc, char *argv[]){
   vFreeDialog();
   vFreeProgramName();
 
-  if ( geBackend == CCG_BACKEND_TERMINAL &&
-       pkstFrontendApi != NULL &&
+  if ( pkstFrontendApi != NULL &&
        pkstFrontendApi->pfnShutdown != NULL ) {
     pkstFrontendApi->pfnShutdown();
   }
