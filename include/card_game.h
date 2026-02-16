@@ -26,7 +26,14 @@
 
   extern char *gkpszProgramName;
   extern int giLevel;
+  /** legacy flag: keep for backward compatibility with existing code paths */
   extern int gbSDL_Mode;
+  typedef enum ENUM_CCG_BACKEND {
+    CCG_BACKEND_TERMINAL = 0,
+    CCG_BACKEND_SDL2,
+    CCG_BACKEND_RAYLIB
+  } ENUM_CCG_BACKEND;
+  extern ENUM_CCG_BACKEND geBackend;
   extern char gszBaseDir[_MAX_PATH];
   
   #define INT_WINDOW_WIDTH  800
