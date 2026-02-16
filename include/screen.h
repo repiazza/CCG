@@ -9,7 +9,6 @@
 #ifndef _SCREEN_H_
 #define _SCREEN_H_
 
-#ifdef USE_SDL2
 
 #ifdef __cplusplus
 extern "C" {
@@ -115,7 +114,6 @@ int bInsertItemInElement(int iElmId, PSTRUCT_SCREEN_ITEM pstItem);
 }
 #endif
 
-#endif
 
 #endif
 
