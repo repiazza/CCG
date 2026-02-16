@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <frontend_api.h>
 #include <frontend_raylib.h>
-#include <sys_interface.h>
+#include <consts.h>
+// #include <sys_interface.h>
 
 #define FRL_WINDOW_WIDTH  800
 #define FRL_WINDOW_HEIGHT 600
@@ -34,9 +35,16 @@ static void vFRL_Shutdown(void) {
 }
 
 static void vFRL_BeginFrame(void) {
+#ifdef USE_RAYLIB
+  BeginDrawing();
+  ClearBackground(BLACK); /* ou outra cor simples */
+#endif
 }
 
 static void vFRL_EndFrame(void) {
+#ifdef USE_RAYLIB
+  EndDrawing();
+#endif
 }
 
 static int iFRL_PollEvent(PSTRUCT_CCG_EVENT pstEvOut) {
@@ -100,6 +108,8 @@ static int iFRL_PollEvent(PSTRUCT_CCG_EVENT pstEvOut) {
 
   return FALSE;
 }
+
+
 
 static float fFRL_GetDeltaTime(void) {
 #ifdef USE_RAYLIB

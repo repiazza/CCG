@@ -27,7 +27,6 @@
   #include <frontend_sdl2.h>
 #endif
 #ifdef USE_RAYLIB
-  #include <raylib.h>
   #include <frontend_raylib.h>
 #endif
 #include <sys_interface.h>
@@ -396,13 +395,22 @@ int CCG_Main(int argc, char *argv[]){
       }
 
       fprintf(stdout, "Raylib MVP inicializado. Feche a janela para sair.\n");
-      while (!pkstFrontendApi->piShouldQuit()) {
+      while ( !pkstFrontendApi->piShouldQuit() ) {
+
+        if ( pkstFrontendApi->pfnBeginFrame != NULL ) {
+          pkstFrontendApi->pfnBeginFrame();
+        }
+
         iHasEvent = pkstFrontendApi->piPollEvent(&stFrontendEvent);
-        if (iHasEvent && stFrontendEvent.eType == CCG_EVT_QUIT) {
+        if ( iHasEvent && stFrontendEvent.eType == CCG_EVT_QUIT ) {
           break;
         }
-        WaitTime(0.01);
+
+        if ( pkstFrontendApi->pfnEndFrame != NULL ) {
+          pkstFrontendApi->pfnEndFrame();
+        }
       }
+
 
       if (pkstFrontendApi->pfnShutdown != NULL) {
         pkstFrontendApi->pfnShutdown();
@@ -417,7 +425,7 @@ int CCG_Main(int argc, char *argv[]){
     fprintf(stderr, "Erro ao ler o arquivo msg.xml!\n");
     return 0;
   }
-     
+
   #ifdef USE_SDL2
     if ( gbSDL_Mode ) {
       if ( !bLoadScreenXml() ) {
