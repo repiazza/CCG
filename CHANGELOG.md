@@ -1,3 +1,7 @@
+## 9.8.0 (2026-02-16)
+
+* feat: raylib real frame loop (minimal draw) ([019a670](https://github.com/repiazza/CCG/commit/019a670))
+
 ## <small>9.7.1 (2026-02-16)</small>
 
 * fix: compilation conflict with wingl api ([5592169](https://github.com/repiazza/CCG/commit/5592169))
