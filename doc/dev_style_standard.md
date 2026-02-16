@@ -14,7 +14,7 @@ Este projeto segue regras obrigatórias de estilo e compatibilidade para manter 
 ## Declarações (REGRA CRÍTICA)
 - **NADA de declarar fora do escopo de declarações.**
 - Declarar variáveis **no começo do escopo** (início de função e início de blocos relevantes).
-- **EXPRESSAMENTE PROIBIDO:** `for (int i = 0; ...)`
+- **EXPRESSAMENTE PROIBIDO**: `for (int i = 0; ...)`
   - Correto:
     - `int ii;`
     - `for (ii = 0; ii < n; ii++) { ... }`
@@ -30,16 +30,16 @@ Este projeto segue regras obrigatórias de estilo e compatibilidade para manter 
   - `p` ponteiro
   - `st` struct
   - `sz` string terminada em zero
-  - `a` array (aglutinacoes estáticas)
+  - `a` array (aglutinações estáticas)
   - `g` global
   - `u` unsigned
   - `k` const
 
-### Composições comuns
+## Composições comuns
 - `psz` ponteiro para string: `char *pszBuffer;`
 - `kpsz` ponteiro const para string: `const char *kpszName;`
 - `gi` inteiro global: `int giFlag;`
-- `ul` unsigned long: `unsigned long ulValue;`
+- `ul` unsigned long: `unsigned long uiValue;`
 - `ast` array estático de structs: `STRUCT_PLAYER astPlayer[MAX_PLAYER];`
 - Ponteiros para struct tipada:
   - `PSTRUCT_PLAYER pstPlayer;` (ponteiro de STRUCT_PLAYER)

@@ -36,12 +36,15 @@
 #include <cmdline.h>
 #include <xml.h>
 #include <msg.h>
+#include <frontend_api.h>
+#include <frontend_terminal.h>
 
 /** === Globals === */
 char *gkpszProgramName;
 int gbLogLevel = 1;
 int giLevel;
 int gbSDL_Mode;
+ENUM_CCG_BACKEND geBackend;
 char gszBaseDir[_MAX_PATH];
 
 STRUCT_GLOBAL_PRM gstGlobalPrm;
@@ -55,7 +58,13 @@ typedef struct STRUCT_CMDLINE {
 
 STRUCT_CMDLINE gstCmdLine;
 
-char* gpszOptStr = "hvt:d:sc:";
+char* gpszOptStr = "hvt:d:sc:r";
+
+#define CMDOPT_HELP     0
+#define CMDOPT_VERSION  1
+#define CMDOPT_SDL      4
+#define CMDOPT_RAYLIB   7
+
 /*
  *  Long Short has_arg pDataType exemple
  *   bSet default pData iDataSize
@@ -96,6 +105,11 @@ STRUCT_COMMANDLINE_OPTIONS astCmdOpt[] = {
   { "base-dir",   'b', optional_argument,    CMDLINETYPE_NULL, "",
     FALSE,         "",  gstCmdLine.szBaseDir, sizeof(gstCmdLine.szBaseDir),
     "Set the root path of the project"
+  },
+  /* 07 */
+  { "raylib", 'r', no_argument, CMDLINETYPE_NULL, "",
+    FALSE,      "", NULL,        0,
+    "Start program in Raylib GUI mode (disable by default)"
   },
   { NULL, 0, no_argument, CMDLINETYPE_NULL, NULL,
      FALSE, NULL, NULL, 0,
@@ -189,6 +203,7 @@ int bInitGlobals(void) {
 
   snprintf(gszDebugLevel, sizeof(gszDebugLevel), "%c", DEBUG_LVL_DETAILS);
   gbSDL_Mode = FALSE;
+  geBackend = CCG_BACKEND_TERMINAL;
   gkpszProgramName = NULL;
 
   if ( !bLoadXmlFromFile(szConfFile, astCCGXml) ) {
@@ -260,6 +275,7 @@ int CCG_Main(int argc, char *argv[]){
   STRUCT_MONSTER astMonsters[MAX_MONSTERS];
   int bRunning = TRUE;
   int iMonsterCount;
+  const STRUCT_FRONTEND_API *pkstFrontendApi;
 #ifdef USE_SDL2
   SDL_Window *pSDL_Wndw = NULL;
   SDL_Renderer *pSDL_Rnd = NULL;
@@ -270,6 +286,7 @@ int CCG_Main(int argc, char *argv[]){
   memset(&gstGlobalPrm, 0x00, sizeof(gstGlobalPrm));
   memset(&gstGame     , 0x00, sizeof(gstGame     ));
   memset(&gstCmdLine  , 0x00, sizeof(gstCmdLine  ));
+  pkstFrontendApi = NULL;
 
   vSetProgramName(argv);
   /**
@@ -296,18 +313,57 @@ int CCG_Main(int argc, char *argv[]){
     return -1;
   }
 
-  if ( astCmdOpt[0].bSet ) {
+  if ( astCmdOpt[CMDOPT_HELP].bSet ) {
     vPrintUsage(argv, astCmdOpt);
     return 0;
   }
 
-  if ( astCmdOpt[1].bSet ) {
+  if ( astCmdOpt[CMDOPT_VERSION].bSet ) {
     vShowVersion();
     return 0;
   }
 
-  if ( astCmdOpt[4].bSet ) {
-    gbSDL_Mode = 1;
+  if ( astCmdOpt[CMDOPT_SDL].bSet && astCmdOpt[CMDOPT_RAYLIB].bSet ) {
+    fprintf(stderr, "Conflito de argumentos: use apenas --sdl ou --raylib.\n");
+    return -1;
+  }
+
+  if ( astCmdOpt[CMDOPT_SDL].bSet ) {
+    geBackend = CCG_BACKEND_SDL2;
+  }
+  if ( astCmdOpt[CMDOPT_RAYLIB].bSet ) {
+    geBackend = CCG_BACKEND_RAYLIB;
+  }
+
+  if ( geBackend == CCG_BACKEND_SDL2 ) {
+    #ifndef USE_SDL2
+      fprintf(stderr, "Backend SDL2 solicitado, mas este binario nao foi compilado com USE_SDL2.\n");
+      return -1;
+    #endif
+    gbSDL_Mode = TRUE; /** legacy mirror of geBackend */
+  }
+
+  if ( geBackend == CCG_BACKEND_TERMINAL ) {
+    /* MVP step: terminal frontend is initialized for future event unification; console loop still uses vCNSL_MainLoop. */
+    pkstFrontendApi = pkstFTERM_GetApi();
+    if (pkstFrontendApi == NULL || pkstFrontendApi->piInit == NULL) {
+      fprintf(stderr, "Falha ao carregar frontend terminal.\n");
+      return -1;
+    }
+    if (pkstFrontendApi->piInit() == FALSE) {
+      fprintf(stderr, "Falha ao inicializar frontend terminal.\n");
+      return -1;
+    }
+  }
+
+  if ( geBackend == CCG_BACKEND_RAYLIB ) {
+    #ifndef USE_RAYLIB
+      fprintf(stderr, "Backend Raylib solicitado, mas este binario nao foi compilado com USE_RAYLIB.\n");
+      return -1;
+    #else
+      fprintf(stderr, "Backend Raylib compilado, mas ainda nao implementado nesta etapa.\n");
+      return -1;
+    #endif
   }
   
   vInitLogs(gstGlobalPrm.szTrace, gstGlobalPrm.szDebugLevel);
@@ -370,6 +426,12 @@ int CCG_Main(int argc, char *argv[]){
   
   vFreeDialog();
   vFreeProgramName();
+
+  if ( geBackend == CCG_BACKEND_TERMINAL &&
+       pkstFrontendApi != NULL &&
+       pkstFrontendApi->pfnShutdown != NULL ) {
+    pkstFrontendApi->pfnShutdown();
+  }
   
   #ifdef USE_SDL2
     if ( gbSDL_Mode ) 
@@ -378,4 +440,3 @@ int CCG_Main(int argc, char *argv[]){
 
   return 0;
 }
-
