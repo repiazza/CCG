@@ -70,6 +70,7 @@ LOG_DIR      = $(TARGET_PREFIX)log
 INC_DIR = -I$(INCLUDE_PATH)
 
 SDL_ADD_LIBS =
+RAYLIB_ADD_LIBS =
 
 ifdef LINUX
     INC_DIR += -I/usr/include/libxml2
@@ -99,26 +100,44 @@ else
 endif
 endif
 
+ifdef USE_RAYLIB
+ifdef LINUX
+    RAYLIB_ADD_LIBS += -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+endif
+ifdef APPLE
+    # TODO(Parte 4): revisar flags/frameworks de Raylib no macOS.
+    RAYLIB_ADD_LIBS += -lraylib
+endif
+ifdef _WIN32
+    # TODO(Parte 4): revisar caminho/bibliotecas de Raylib no Win32.
+    RAYLIB_ADD_LIBS += -lraylib
+endif
+endif
+
 LIBS  = -lxml2
 CCOPT = -Wall -Wextra
 
 ifdef _WIN32
     CCOPT += -D_WIN32
-    LIBS  += $(SDL_ADD_LIBS) -D_WIN32
+    LIBS  += $(SDL_ADD_LIBS) $(RAYLIB_ADD_LIBS) -D_WIN32
 endif
 
 ifdef LINUX
     CCOPT += -DLINUX
-    LIBS  += -Wl,-rpath,/usr/lib64 -Wl,--enable-new-dtags $(SDL_ADD_LIBS) -DLINUX
+    LIBS  += -Wl,-rpath,/usr/lib64 -Wl,--enable-new-dtags $(SDL_ADD_LIBS) $(RAYLIB_ADD_LIBS) -DLINUX
 endif
 
 ifdef APPLE
   CCOPT += -Wno-main -DAPPLE
-  LIBS +=  -L /opt/homebrew/lib -L /opt/homebrew/opt/libxml2/lib $(SDL_ADD_LIBS)
+  LIBS +=  -L /opt/homebrew/lib -L /opt/homebrew/opt/libxml2/lib $(SDL_ADD_LIBS) $(RAYLIB_ADD_LIBS)
 endif
 
 ifdef USE_SDL2
     CCOPT += -DUSE_SDL2
+endif
+
+ifdef USE_RAYLIB
+    CCOPT += -DUSE_RAYLIB
 endif
 
 LIBS += -lm
@@ -141,6 +160,7 @@ ifdef USE_SDL2
 SDL_OBJ = \
     $(OBJ_DIR)/sdl_api.o \
     $(OBJ_DIR)/sdl_animation.o \
+    $(OBJ_DIR)/frontend_sdl2.o \
     $(OBJ_DIR)/image.o \
     $(OBJ_DIR)/event_render.o \
     $(OBJ_DIR)/event.o \
@@ -149,11 +169,18 @@ SDL_OBJ = \
     $(OBJ_DIR)/font.o
 endif
 
+RAYLIB_OBJ =
+ifdef USE_RAYLIB
+RAYLIB_OBJ = \
+    $(OBJ_DIR)/frontend_raylib.o
+endif
+
 CARD_GAME_EXEC = card_game
 
 OBJS = \
     $(OBJ_DIR)/card_game.o \
     $(SDL_OBJ) \
+    $(RAYLIB_OBJ) \
     $(OBJ_DIR)/sys_interface.o \
     $(OBJ_DIR)/input.o \
     $(OBJ_DIR)/terminal_utils.o \
