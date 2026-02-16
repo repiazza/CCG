@@ -26,6 +26,9 @@
   #include <sdl_api.h>
   #include <frontend_sdl2.h>
 #endif
+#ifdef USE_RAYLIB
+  #include <frontend_raylib.h>
+#endif
 #include <sys_interface.h>
 #include <card_game.h>
 #include <game.h>
@@ -277,6 +280,10 @@ int CCG_Main(int argc, char *argv[]){
   int bRunning = TRUE;
   int iMonsterCount;
   const STRUCT_FRONTEND_API *pkstFrontendApi;
+#ifdef USE_RAYLIB
+  STRUCT_CCG_EVENT stFrontendEvent;
+  int iHasEvent;
+#endif
 #ifdef USE_SDL2
   SDL_Window *pSDL_Wndw = NULL;
   SDL_Renderer *pSDL_Rnd = NULL;
@@ -288,6 +295,10 @@ int CCG_Main(int argc, char *argv[]){
   memset(&gstGame     , 0x00, sizeof(gstGame     ));
   memset(&gstCmdLine  , 0x00, sizeof(gstCmdLine  ));
   pkstFrontendApi = NULL;
+#ifdef USE_RAYLIB
+  memset(&stFrontendEvent, 0x00, sizeof(stFrontendEvent));
+  iHasEvent = FALSE;
+#endif
 
   vSetProgramName(argv);
   /**
@@ -373,8 +384,28 @@ int CCG_Main(int argc, char *argv[]){
       fprintf(stderr, "Backend Raylib solicitado, mas este binario nao foi compilado com USE_RAYLIB.\n");
       return -1;
     #else
-      fprintf(stderr, "Backend Raylib compilado, mas ainda nao implementado nesta etapa.\n");
-      return -1;
+      pkstFrontendApi = pkstFRL_GetApi();
+      if (pkstFrontendApi == NULL || pkstFrontendApi->piInit == NULL) {
+        fprintf(stderr, "Falha ao carregar frontend Raylib.\n");
+        return -1;
+      }
+      if (pkstFrontendApi->piInit() == FALSE) {
+        fprintf(stderr, "Falha ao inicializar frontend Raylib.\n");
+        return -1;
+      }
+
+      fprintf(stdout, "Raylib MVP inicializado. Feche a janela para sair.\n");
+      while (!pkstFrontendApi->piShouldQuit()) {
+        iHasEvent = pkstFrontendApi->piPollEvent(&stFrontendEvent);
+        if (iHasEvent && stFrontendEvent.eType == CCG_EVT_QUIT) {
+          break;
+        }
+      }
+
+      if (pkstFrontendApi->pfnShutdown != NULL) {
+        pkstFrontendApi->pfnShutdown();
+      }
+      return 0;
     #endif
   }
   
