@@ -1,3 +1,11 @@
+## 9.6.0 (2026-02-16)
+
+* feat: Refine SDL2 frontend MVP teardown docs and left-click handling ([98c9510](https://github.com/repiazza/CCG/commit/98c9510))
+* chore: clarify terminal frontend MVP and tighten shutdown condition  ([53d9333](https://github.com/repiazza/CCG/commit/53d9333))
+* docs: devlopment style standards ([64a6eef](https://github.com/repiazza/CCG/commit/64a6eef))
+* docs: refine raylib analysis with terminal events and poll_event API (#16) ([533547e](https://github.com/repiazza/CCG/commit/533547e)), closes [#16](https://github.com/repiazza/CCG/issues/16)
+* Docs: translate deck comments to English (#15) ([236e868](https://github.com/repiazza/CCG/commit/236e868)), closes [#15](https://github.com/repiazza/CCG/issues/15)
+
 ## 9.5.0 (2026-01-30)
 
 * feat: Shop visual rework - change textual menu to card images ([7207ec0](https://github.com/repiazza/CCG/commit/7207ec0))
