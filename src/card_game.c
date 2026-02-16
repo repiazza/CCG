@@ -274,6 +274,38 @@ int iSDL_OpenShop(SDL_Renderer *pSDL_Renderer, PSTRUCT_PLAYER pstPlayer, PSTRUCT
  *  Otherwise(console mode) uses traditional main()
  *
  */
+
+#ifdef USE_RAYLIB
+static void vCG_HandleFrontendEvent(const STRUCT_CCG_EVENT *kpstEv) {
+  if ( kpstEv == NULL ) {
+    return;
+  }
+
+  switch ( kpstEv->eType ) {
+    case CCG_EVT_UP:
+      vTraceVarArgsFn("[RAYLIB][INPUT] UP");
+      break;
+    case CCG_EVT_DOWN:
+      vTraceVarArgsFn("[RAYLIB][INPUT] DOWN");
+      break;
+    case CCG_EVT_LEFT:
+      vTraceVarArgsFn("[RAYLIB][INPUT] LEFT");
+      break;
+    case CCG_EVT_RIGHT:
+      vTraceVarArgsFn("[RAYLIB][INPUT] RIGHT");
+      break;
+    case CCG_EVT_CONFIRM:
+      vTraceVarArgsFn("[RAYLIB][INPUT] CONFIRM");
+      break;
+    case CCG_EVT_CANCEL:
+      vTraceVarArgsFn("[RAYLIB][INPUT] CANCEL");
+      break;
+    default:
+      break;
+  }
+}
+#endif
+
 int CCG_Main(int argc, char *argv[]){
   STRUCT_DECK stDeck;
   STRUCT_MONSTER astMonsters[MAX_MONSTERS];
@@ -406,6 +438,7 @@ int CCG_Main(int argc, char *argv[]){
           if ( !iHasEvent ) {
             break;
           }
+          vCG_HandleFrontendEvent(&stFrontendEvent);
           if ( stFrontendEvent.eType == CCG_EVT_QUIT ) {
             break;
           }
