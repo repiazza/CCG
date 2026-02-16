@@ -1,3 +1,7 @@
+## <small>9.8.1 (2026-02-16)</small>
+
+* fix(raylib): use trace logging for frontend input bridge ([bb45086](https://github.com/repiazza/CCG/commit/bb45086))
+
 ## 9.8.0 (2026-02-16)
 
 * feat: raylib real frame loop (minimal draw) ([019a670](https://github.com/repiazza/CCG/commit/019a670))
