@@ -1,26 +1,34 @@
 # 🤝 Guia de Contribuição
 
-Obrigado por querer contribuir com o **CCG – Console Card Game**!  
-Aqui estão algumas orientações rápidas para mantermos o projeto organizado.
+Obrigado por contribuir com o **CCG**.
+
+Este repositório está em transição para arquitetura **multi-frontend**. Hoje coexistem:
+- lógica de jogo/core
+- frontends Terminal, SDL2 e raylib
+- partes legadas e partes já migradas para API de frontend unificada
+
+O objetivo das contribuições é evoluir o projeto sem regressões entre backends.
 
 ---
 
 ## 🚀 Fluxo de contribuição
-1. Crie um fork do repositório
+
+1. Faça um fork do repositório
 2. Crie um branch descritivo:
    ```bash
    git checkout -b feature/minha-feature
    ```
 3. Implemente sua alteração
-4. Confirme que o projeto compila com `make`
-5. Abra um Pull Request relacionando a issue (se houver)
+4. Compile e valide o(s) backend(s) impactado(s)
+5. Abra um Pull Request com contexto técnico claro
 
 ---
 
-## � Padrão de Commits (Conventional Commits)
-Utilizamos o padrão [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) para mensagens de commit:
+## 🧾 Padrão de commits (Conventional Commits)
 
-```
+Utilizamos [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
+
+```text
 <tipo>[escopo opcional]: <descrição>
 
 [corpo opcional]
@@ -28,55 +36,123 @@ Utilizamos o padrão [Conventional Commits](https://www.conventionalcommits.org/
 [rodapé(s) opcional(is)]
 ```
 
-### Tipos de commit:
-- `feat`: Nova funcionalidade
-- `fix`: Correção de bug
-- `docs`: Mudanças na documentação
-- `style`: Formatação, ponto e vírgula ausente, etc (sem mudança de código)
-- `refactor`: Refatoração de código (sem nova feature ou correção)
-- `perf`: Melhoria de performance
-- `test`: Adição ou correção de testes
-- `build`: Mudanças no sistema de build ou dependências
-- `ci`: Mudanças nos arquivos de CI
-- `chore`: Outras mudanças que não modificam src ou test
+### Tipos
+- `feat`: nova funcionalidade
+- `fix`: correção de bug
+- `docs`: documentação
+- `style`: formatação (sem mudança de comportamento)
+- `refactor`: refatoração sem nova feature/fix
+- `perf`: melhoria de performance
+- `test`: testes
+- `build`: build/dependências
+- `ci`: integração contínua
+- `chore`: manutenção geral
 
-### Exemplos:
+### Exemplos
 ```bash
-feat: adicionar sistema de batalha
-fix: corrigir cálculo de dano das cartas
-docs: atualizar README com instruções de instalação
-feat!: mudar estrutura da API (BREAKING CHANGE)
+feat(frontend-raylib): adicionar mapeamento de evento de teclado
+fix(core): corrigir cálculo de dano crítico
+docs(readme): atualizar seção de backends e migração
+feat!: alterar contrato da API de frontend
 ```
 
-**Importante**: Commits que quebram compatibilidade devem usar `!` após o tipo ou incluir `BREAKING CHANGE:` no rodapé.
+Use `!` ou `BREAKING CHANGE:` quando houver quebra de compatibilidade.
 
 ---
 
-## �📏 Padrões de código
+## 🧱 Diretrizes de arquitetura para PRs
+
+### 1) Separe core de frontend
+
+- Evite acoplar regra de negócio ao backend gráfico.
+- Código de gameplay deve permanecer no core sempre que possível.
+- Rendering/input/backend-specific deve ficar isolado em módulos de frontend.
+
+### 2) Não quebre outros backends
+
+Ao alterar qualquer parte de execução, valide impactos em:
+- Terminal
+- SDL2
+- raylib
+
+Se a mudança for específica de backend, deixe explícito no PR e no commit scope.
+
+### 3) Respeite o estado de maturidade dos backends
+
+- **SDL2**: implementação funcional mais completa hoje.
+- **raylib**: backend em evolução (MVP), ainda em convergência.
+- **Terminal**: permanece funcional e relevante para baseline/debug.
+
+### 4) Migração para API unificada
+
+A migração para modelo de frontend unificado está em andamento.
+Contribuições são bem-vindas para reduzir dependência de loops legados,
+mas sem quebrar o comportamento atual.
+
+---
+
+## 🧪 Validação mínima antes do PR
+
+Execute ao menos os builds relacionados ao que foi alterado.
+
+### Linux
+```bash
+# terminal
+make LINUX=1 all
+
+# SDL2
+make LINUX=1 USE_SDL2=1 all
+
+# raylib
+make LINUX=1 USE_RAYLIB=1 all
+```
+
+### Win32 (MinGW)
+```bash
+# terminal
+make _WIN32=1 all
+
+# SDL2
+make _WIN32=1 USE_SDL2=1 all
+
+# raylib
+make _WIN32=1 USE_RAYLIB=1 all
+```
+
+### Perfis adicionais
+```bash
+make LINUX=1 DEBUG=1 all
+make LINUX=1 FAKE=1 all
+```
+
+Se não conseguir validar algum backend por limitação de ambiente, documente isso no PR.
+
+---
+
+## 🧹 Padrões de código
+
 - Linguagem: **C99**
 - Indentação: **2 espaços**
-- Variáveis declaradas no **início do escopo**
-- Notação húngara:
-  - `iVariavel` → int  
-  - `dVariavel` → double  
-  - `szTexto` → string estática  
-  - `pszTexto` → ponteiro para string  
-  - `stEstrutura` → struct  
-  - `pstEstrutura` → ponteiro para struct
-  - `a+variavel` -> array de tipo de variavel. Ex.: aszStringLst -> char *szString[]
-  - `g+variavel` -> global
-- Seguir boas práticas de modularização: headers em `include/`, código em `src/`
+- Variáveis declaradas no início do escopo
+- Convenções de nomenclatura históricas do projeto devem ser preservadas
+- Headers em `include/`, implementação em `src/`
+- Configuração runtime em `conf/*.xml` (não `config/`)
 
 ---
 
-## ✅ Checklist para Pull Requests
-- [ ] Código compila e roda (`make` sem erros)
-- [ ] Alterações testadas manualmente
-- [ ] Código segue padrão do projeto
-- [ ] Mensagem de commit segue o padrão Conventional Commits
-- [ ] Comentários/documentação atualizados
+## ✅ Checklist para Pull Request
+
+- [ ] Código compila no(s) backend(s) impactado(s)
+- [ ] Não houve regressão clara em backend não alterado
+- [ ] Escopo da mudança está claro (core, SDL2, raylib, terminal)
+- [ ] Commit(s) seguem Conventional Commits
+- [ ] Documentação atualizada quando necessário
 
 ---
 
-## 📬 Dúvidas?
-Abra uma [Discussion](https://github.com/SEU_USUARIO/CCG/discussions) ou crie uma issue.
+## 📬 Dúvidas
+
+Abra uma issue ou discussion descrevendo:
+- cenário
+- backend/plataforma
+- passos para reproduzir
