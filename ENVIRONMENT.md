@@ -10,9 +10,36 @@ Atualmente, o projeto possui builds com foco em três modos:
 
 ---
 
-## 🐧 Linux (Debian/Ubuntu/Fedora/Arch)
+## 📜 Fluxo recomendado
 
-### 1. Instalar dependências básicas
+No dia a dia, use **scripts em `scripts/`** como interface principal de build.
+
+- `scripts/` = fluxo recomendado para dev
+- `Makefile` = base interna de compilação
+
+Padrão de nomes dos scripts:
+
+- `mk` → build incremental (sem `clean`)
+- `mkall` → build completo (`clean` + diretórios + build)
+- `S` → build com SDL2
+- `R` → build com raylib
+- `d` → debug
+- `f` → fake
+
+Exemplos reais:
+
+```bash
+./scripts/mkallS_linux.sh   # all + SDL2
+./scripts/mkdS_linux.sh      # incremental + debug + SDL2
+./scripts/mkall_linux.sh     # all terminal
+./scripts/mkallR_win32.sh    # all raylib (win32)
+```
+
+---
+
+## 🐧 Linux
+
+### 1) Dependências base
 
 ```bash
 # Debian/Ubuntu
@@ -75,17 +102,23 @@ make LINUX=1 FAKE=1 all
 make clean
 ```
 
+### 4) Build direto com make (base interna)
+
+```bash
+make LINUX=1 all
+make LINUX=1 USE_SDL2=1 all
+make LINUX=1 USE_RAYLIB=1 all
+make LINUX=1 DEBUG=1 all
+make LINUX=1 FAKE=1 all
+```
+
 ---
 
 ## 🪟 Windows (MSYS2/MinGW)
 
-### 1. Instalar MSYS2
-
-Baixe e instale [MSYS2](https://www.msys2.org/).
-
 ### 2. Instalar toolchain e libs
 
-Abra o terminal **MSYS2 MinGW64** e execute:
+No terminal **MSYS2 MinGW64**:
 
 ```bash
 pacman -Syu
@@ -103,7 +136,7 @@ pacman -S --needed mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_ttf mingw-w64-x86
 pacman -S --needed mingw-w64-x86_64-raylib
 ```
 
-### 3. Clonar e compilar
+### 2) Build e execução (scripts)
 
 ```bash
 git clone https://github.com/repiazza/CCG.git
@@ -112,6 +145,14 @@ cd CCG
 # Terminal (padrão)
 make _WIN32=1 all
 ./bin/card_game.exe
+
+# SDL2
+./scripts/mkallS_win32.sh
+./bin/card_game.exe --sdl
+
+# raylib
+./scripts/mkallR_win32.sh
+./bin/card_game.exe --raylib
 ```
 
 ### 4. Builds por backend
@@ -173,7 +214,7 @@ Exemplos:
 
 ---
 
-## ✅ Resumo
+## ✅ Resumo rápido
 
 - **Terminal:** build padrão (sem `USE_*`)
 - **SDL2:** build com `USE_SDL2=1`

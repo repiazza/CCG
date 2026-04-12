@@ -85,7 +85,7 @@ Situação atual:
 
 ---
 
-## 📂 Estrutura do projeto
+## ⚡ Quick start
 
 ```text
 ├── assets/           # imagens (.png)
