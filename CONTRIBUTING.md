@@ -93,14 +93,7 @@ mas sem quebrar o comportamento atual.
 
 ## 🧪 Validação mínima antes do PR
 
-Use scripts sempre que possível:
-
-```bash
-./scripts/mkall_linux.sh
-./scripts/mkallS_linux.sh
-```
-
-E execute ao menos os builds relacionados ao que foi alterado.
+Execute ao menos os builds relacionados ao que foi alterado.
 
 ### Linux
 ```bash
