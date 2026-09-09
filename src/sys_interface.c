@@ -4,49 +4,53 @@
 #include <deck.h>
 #include <monster.h>
 #ifdef USE_SDL2
-  #include <SDL2/SDL.h>
+#include <SDL2/SDL.h>
 #endif
 #include <dialog.h>
 #include <input.h>
 #include <sys_interface.h>
 
 #ifdef _WIN32
-  #include <stdint.h> /** Para intptr_t */
-  #include <stdlib.h>
-  #include <winsock2.h>
-  #include <windows.h>
+#include <stdint.h> /** Para intptr_t */
+#include <stdlib.h>
+#include <winsock2.h>
+#include <windows.h>
 #else
-  #include <libgen.h>
-  #include <signal.h>
-  #include <sys/types.h>
-  #include <sys/wait.h>
-  #include <sys/stat.h>
-  #include <unistd.h>
+#include <libgen.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #endif
 
 #ifdef _WIN32
-  /** Wrapper para CreateThread */
-  DWORD WINAPI ThreadWrapper(LPVOID pArg) {
-    void (**args)(int) = (void (**)(int))pArg;
-    void (*func)(int) = args[0];
-    int param = (int)(intptr_t)args[1];
-    func(param);
-    free(pArg);
-    return 0;
-  }
+/** Wrapper para CreateThread */
+DWORD WINAPI ThreadWrapper(LPVOID pArg)
+{
+  void (**args)(int) = (void (**)(int))pArg;
+  void (*func)(int) = args[0];
+  int param = (int)(intptr_t)args[1];
+  func(param);
+  free(pArg);
+  return 0;
+}
 
-  /** Wrapper para SetConsoleCtrlHandler */
-  static int WINAPI CtrlHandler(DWORD dwCtrlType) {
-    (void)dwCtrlType;
-    return TRUE; /** Apenas consome o evento */
-  }
+/** Wrapper para SetConsoleCtrlHandler */
+static int WINAPI CtrlHandler(DWORD dwCtrlType)
+{
+  (void)dwCtrlType;
+  return TRUE; /** Apenas consome o evento */
+}
 #endif
 
-void vSendSig2Process(int iPID, int iSigType) {
+void vSendSig2Process(int iPID, int iSigType)
+{
 #ifdef _WIN32
   (void)iSigType; /** Não usado no Windows */
   HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, iPID);
-  if (hProcess) {
+  if (hProcess)
+  {
     TerminateProcess(hProcess, 0);
     CloseHandle(hProcess);
   }
@@ -55,7 +59,8 @@ void vSendSig2Process(int iPID, int iSigType) {
 #endif
 }
 
-void vSetSigUsrHandler(void (*vActCallBack)(int)) {
+void vSetSigUsrHandler(void (*vActCallBack)(int))
+{
 #ifdef _WIN32
   (void)vActCallBack; /** Não usado, mas podemos armazenar se necessário */
   SetConsoleCtrlHandler(CtrlHandler, TRUE);
@@ -69,8 +74,8 @@ void vSetSigUsrHandler(void (*vActCallBack)(int)) {
 #endif
 }
 
-
-void vWaitChild() {
+void vWaitChild()
+{
 #ifdef _WIN32
   vSleepSeconds(100);
 #else
@@ -78,75 +83,87 @@ void vWaitChild() {
 #endif
 }
 #ifdef _WIN32
-  // Return 0 if error
-  int iDIR_MkDir(char *szDir) { 
-    return CreateDirectory(szDir, NULL); 
-  }
-  int iDIR_SplitFilename(char *szFilename, char *szPath, char *szName, char *szExt) {
-    char szDrive[_MAX_DRIVE];
-    char szDir[_MAX_DIR];
-    _splitpath(szFilename, szDrive, szDir, szName, szExt);
-    strcpy(szPath, szDrive);
-    strcat(szPath, szDir);
-    return 0;
-  }
+// Return 0 if error
+int iDIR_MkDir(char *szDir)
+{
+  return CreateDirectory(szDir, NULL);
+}
+int iDIR_SplitFilename(char *szFilename, char *szPath, char *szName, char *szExt)
+{
+  char szDrive[_MAX_DRIVE];
+  char szDir[_MAX_DIR];
+  _splitpath(szFilename, szDrive, szDir, szName, szExt);
+  strcpy(szPath, szDrive);
+  strcat(szPath, szDir);
+  return 0;
+}
 
-  int iDIR_IsDir(char *szDir) {
-    HANDLE hArquivo;
-    WIN32_FIND_DATA wfdArquivo;
+int iDIR_IsDir(char *szDir)
+{
+  HANDLE hArquivo;
+  WIN32_FIND_DATA wfdArquivo;
 
-    hArquivo = FindFirstFile(szDir, &wfdArquivo);
-    if (hArquivo == INVALID_HANDLE_VALUE)
-      return -1; /* não existe */
+  hArquivo = FindFirstFile(szDir, &wfdArquivo);
+  if (hArquivo == INVALID_HANDLE_VALUE)
+    return -1; /* não existe */
 
-    FindClose(hArquivo);
-    if (wfdArquivo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-      return 1; /* diretório */
+  FindClose(hArquivo);
+  if (wfdArquivo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+    return 1; /* diretório */
 
-    return 0;   /* arquivo */
-  }
+  return 0; /* arquivo */
+}
 #else /** LINUX */
 /*
  * Is directory: 1
  * Exists, not directory: 0
  * Does not exist: -1
  * **/
-int iDIR_IsDir(char *szDir) {
+int iDIR_IsDir(char *szDir)
+{
   struct stat stStat;
   if (stat(szDir, &stStat) != 0)
     return -1;
   if (S_ISDIR(stStat.st_mode))
-    return  1;
+    return 1;
   if (S_ISREG(stStat.st_mode))
-    return  0;  /* arquivo regular */
-  
+    return 0; /* arquivo regular */
+
   return 0;
 }
 int iDIR_SplitFilename(char *szFilename, char *szPath, char *szName,
-                       char *szExt) {
+                       char *szExt)
+{
   char szWrk[_MAX_PATH];
   char szBase[_MAX_PATH];
   char *pszBase;
   int ii;
   strcpy(szWrk, szFilename);
   pszBase = dirname(szWrk);
-  if (pszBase == NULL) {
+  if (pszBase == NULL)
+  {
     szPath[0] = 0;
-  } else {
+  }
+  else
+  {
     strcpy(szPath, pszBase);
   }
   strcpy(szWrk, szFilename);
   pszBase = basename(szWrk);
   strcpy(szBase, pszBase);
-  for (ii = strlen(szBase) - 1; ii && szBase[ii] != '.'; ii--) {
+  for (ii = strlen(szBase) - 1; ii && szBase[ii] != '.'; ii--)
+  {
     if (szBase[ii] == '\n' || szBase[ii] == '\r')
       szBase[ii] = 0;
   }
-  if (ii > 0) { // found dot
+  if (ii > 0)
+  { // found dot
     strcpy(szExt, &szBase[ii]);
     szBase[ii] = 0;
     strcpy(szName, szBase);
-  } else {
+  }
+  else
+  {
     strcpy(szName, szBase);
     *szExt = 0;
   }
@@ -165,15 +182,19 @@ int iDIR_MkDir(char *szDir) // linux
 }
 #endif
 
-int bOpenFile(FILE **fppFile, const char *kpszFileName, const char *kpszMode) {
-  if ((*fppFile = fopen(kpszFileName, kpszMode)) == NULL) {
+int bOpenFile(FILE **fppFile, const char *kpszFileName, const char *kpszMode)
+{
+  if ((*fppFile = fopen(kpszFileName, kpszMode)) == NULL)
+  {
     return FALSE;
   }
   return TRUE;
 } /* bOpenFile */
 
-int bCloseFile(FILE **fppFile) {
-  if (*fppFile != NULL) {
+int bCloseFile(FILE **fppFile)
+{
+  if (*fppFile != NULL)
+  {
     fclose(*fppFile);
     *fppFile = NULL;
 
@@ -182,10 +203,12 @@ int bCloseFile(FILE **fppFile) {
   return FALSE;
 } /* bCloseFile */
 
-int bFileExist(const char *kpszFileName) {
+int bFileExist(const char *kpszFileName)
+{
   FILE *fpFile = NULL;
 
-  if (!bOpenFile(&fpFile, kpszFileName, "r")) {
+  if (!bOpenFile(&fpFile, kpszFileName, "r"))
+  {
     return FALSE;
   }
 
@@ -194,32 +217,77 @@ int bFileExist(const char *kpszFileName) {
   return TRUE;
 } /* bFileExist */
 
-int bRunCmd(char *pszCmd, char *pszRsl, int iRslSz) {
+int bRunCmd(char *pszCmd, char *pszRsl, int iRslSz)
+{
   FILE *pfPopen;
   char szLine[1024];
   int iCurrLen = 0;
+  int iLineLen;
 
-  if ((pfPopen = popen(pszCmd, "r")) == NULL)
+  if (pszCmd == NULL ||
+      pszRsl == NULL ||
+      iRslSz <= 0)
+  {
     return FALSE;
-
-  while (fgets(szLine, sizeof(szLine), pfPopen)) {
-    if (((int)strlen(szLine) + iCurrLen) > iRslSz) {
-      pclose(pfPopen);
-      return FALSE;
-    }
-    sprintf(&pszRsl[iCurrLen], "%s", szLine);
-    iCurrLen += strlen(szLine);
   }
 
-  pclose(pfPopen);
-  if (bStrIsEmpty(pszRsl))
+#ifdef _WIN32
+  pfPopen = _popen(pszCmd, "r");
+#else
+  pfPopen = popen(pszCmd, "r");
+#endif
+
+  if (pfPopen == NULL)
+  {
     return FALSE;
+  }
+
+  pszRsl[0] = '\0';
+
+  while (fgets(szLine, sizeof(szLine), pfPopen))
+  {
+    iLineLen = (int)strlen(szLine);
+
+    /*
+     * Reserve one byte for the terminating '\0'.
+     */
+    if (iCurrLen + iLineLen >= iRslSz)
+    {
+#ifdef _WIN32
+      _pclose(pfPopen);
+#else
+      pclose(pfPopen);
+#endif
+
+      return FALSE;
+    }
+
+    memcpy(&pszRsl[iCurrLen],
+           szLine,
+           (size_t)iLineLen);
+
+    iCurrLen += iLineLen;
+    pszRsl[iCurrLen] = '\0';
+  }
+
+#ifdef _WIN32
+  _pclose(pfPopen);
+#else
+  pclose(pfPopen);
+#endif
+
+  if (bStrIsEmpty(pszRsl))
+  {
+    return FALSE;
+  }
 
   return TRUE;
 }
 
-int bStrIsEmpty(const char *kpszStr) {
-  if (kpszStr == NULL || !strcmp(kpszStr, "") || !strcmp(kpszStr, "\n")) {
+int bStrIsEmpty(const char *kpszStr)
+{
+  if (kpszStr == NULL || !strcmp(kpszStr, "") || !strcmp(kpszStr, "\n"))
+  {
     return TRUE;
   }
 
@@ -228,7 +296,9 @@ int bStrIsEmpty(const char *kpszStr) {
 
 int bStrIsNumeric(const char *kpszString)
 {
-  if (bStrIsEmpty(kpszString) == TRUE) return FALSE;
-  for ( ; *kpszString >= '0' && *kpszString <= '9'; kpszString++);
+  if (bStrIsEmpty(kpszString) == TRUE)
+    return FALSE;
+  for (; *kpszString >= '0' && *kpszString <= '9'; kpszString++)
+    ;
   return (*kpszString == 0);
 }
