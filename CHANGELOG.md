@@ -1,3 +1,12 @@
+## <small>9.8.3 (2026-10-03)</small>
+
+* Merge pull request #25 from sincezola/fix/logger-thread-safety ([f3dce0a](https://github.com/repiazza/CCG/commit/f3dce0a)), closes [#25](https://github.com/repiazza/CCG/issues/25)
+* fix: improve logger thread safety and formatting ([7f76d54](https://github.com/repiazza/CCG/commit/7f76d54))
+* docs: atualizar docs para arquitetura multi-frontend ([c81a30e](https://github.com/repiazza/CCG/commit/c81a30e))
+* docs: separar onboarding, setup, contribuição e arquitetura ([0b1a12a](https://github.com/repiazza/CCG/commit/0b1a12a))
+* docs: updated README.md ([0b301df](https://github.com/repiazza/CCG/commit/0b301df))
+* chore: Remove unrelated card_game changes from screen decoupling update (#22) ([1de4fbf](https://github.com/repiazza/CCG/commit/1de4fbf)), closes [#22](https://github.com/repiazza/CCG/issues/22)
+
 ## <small>9.8.2 (2026-02-16)</small>
 
 * fix: raylib frame loop shutdown and logging init order ([4248544](https://github.com/repiazza/CCG/commit/4248544))
